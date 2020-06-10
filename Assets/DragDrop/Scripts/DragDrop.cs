@@ -21,6 +21,26 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
 
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
+    private GameObject dest;
+    private bool isInSlot;
+
+    public void SetDest(GameObject go)
+    {
+        dest = go;
+    }
+
+    public void ClearDest()
+    {
+        dest = null;
+    }
+    
+    void Update()
+    {
+        if(dest != null)
+        {
+            transform.position = dest.transform.position;
+        }
+    }
 
     private void Awake() {
         rectTransform = GetComponent<RectTransform>();
@@ -46,6 +66,8 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
 
     public void OnPointerDown(PointerEventData eventData) {
         Debug.Log("OnPointerDown");
+        ClearDest();
+
     }
 
 }

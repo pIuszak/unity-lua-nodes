@@ -18,9 +18,11 @@ using UnityEngine.EventSystems;
 public class ItemSlot : MonoBehaviour, IDropHandler {
 
     public void OnDrop(PointerEventData eventData) {
-        Debug.Log("OnDrop");
+        //Debug.Log(");
         if (eventData.pointerDrag != null) {
-            eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
+
+            eventData.pointerDrag.GetComponent<DragDrop>().SetDest(gameObject);
+            eventData.pointerDrag.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
         }
     }
 
