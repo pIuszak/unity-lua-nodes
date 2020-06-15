@@ -27,7 +27,7 @@ public class UINodeLineRenderer : UILineRenderer
     void Start()
     {
         SetAllDirty();
-
+        myCanvas = GetComponentInParent<Canvas>();
     }
 
     [UsedImplicitly]
@@ -69,8 +69,8 @@ public class UINodeLineRenderer : UILineRenderer
         Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(myCanvas.transform as RectTransform,
             new Vector2(src.transform.position.x,src.transform.position.y), myCanvas.worldCamera, out pos);
-        m_points[0] = pos;
+        m_points[0] = src.transform.localPosition;
         
         m_points[1] = dest.transform.localPosition;
-    }
+    }    
 }
