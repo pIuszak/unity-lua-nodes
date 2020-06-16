@@ -1,17 +1,16 @@
 -- base if func, provided by Delivr
 
-function func(A, B)
-    if A >= B then
+function func(A)
+    if A < 50 then
         return true
-    elseif op == "-" then
-        r = a - b
-    elseif op == "*" then
-        r = a * b
-    elseif op == "/" then
-        r = a / b
     else
-        error("invalid operation")
+        return false
     end
 end
-
-return fact(5)
+--function func(A, B)
+--    if A < B then
+--        return true
+--    else
+--        return false
+--    end
+--end

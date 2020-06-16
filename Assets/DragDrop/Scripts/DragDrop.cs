@@ -41,9 +41,9 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
             transform.position = dest.transform.position;
         }
     }
-
+    
     private void OnEnable() {
-        canvas.GetComponentInParent<Canvas>();
+        canvas = GetComponentInParent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
     }
