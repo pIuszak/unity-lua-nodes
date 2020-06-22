@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
  * 1 get data from prevous node
@@ -10,14 +13,14 @@ using UnityEngine;
  */
 
 [ExecuteInEditMode]
-public class Node : MonoBehaviour
+public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
-    
+    [SerializeField] private Creature MyBrain;
     [SerializeField] private NodeSlot[] InNodeSlots;
-    
-    [SerializeField] private Node[] OutputNodes;
     [SerializeField] private NodeSlot[] OutNodeSlots; 
+    [SerializeField] private Node[] OutputNodes;
+    [SerializeField] private Slider MySlider;
 
     
     [SerializeField] private string FileName = "Test.lua";
@@ -37,29 +40,49 @@ public class Node : MonoBehaviour
         }
     }
 
-    private void Compute()
+    public void Compute()
     {
-        
+        Debug.Log("Bip Bop Compute");
+        Test();
     }
     
     private void Start()
     {
         LoadLua();
     }
-    
+
+    // extract value list from inNodeSlots
+    private int[] WrapData()
+    {
+        var length = InNodeSlots.Length;
+        var ret = new int[length];
+
+        for (var i = 0; i < length; i++)
+        {
+            ret[i] = InNodeSlots[i].Value;
+        }
+        
+        return ret;
+    }
+    //this works for simple if and similar
     void Test()
     {
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, FileName);
         LuaCode = System.IO.File.ReadAllText(filePath);
-
         Script script = new Script();
-
+        
+        Debug.Log("FOR  : "+ InNodeSlots[0].Name);
+        
+        //todo dynamic arguments passing to/from LUA script
+        script.Globals["ApiMoveTo"] = (Func<float,float,int>) MyBrain.ApiMoveTo;
         script.DoString(LuaCode);
-        Debug.Log("FOR  : "+InNodeSlots[0].Name);
-        DynValue res = script.Call(script.Globals["func"], InNodeSlots[0].Value);
+        
+        // if there is a slider, pass his value 
+        var slider = MySlider ? MySlider.value : 0f;
 
-        Debug.Log("LUA SAYS : "+res.Number);
+        DynValue res = script.Call(script.Globals["main"],  WrapData(), slider);
+        Debug.Log("LUA SAYS : " +res.Number);
     }
 
     // load lua code associated with this node  
@@ -77,6 +100,36 @@ public class Node : MonoBehaviour
 
         // Instantiate the singleton
         //  new Actions( myLuaCode );
+    }
+        
+
+    [Button]
+    void CallbackTestDebug()
+    {
+        Debug.Log(CallbackTest());
+    }
+
+    private double CallbackTest()
+    {
+        string scriptCode = @"    
+        -- defines a factorial function
+        function fact (n)
+            if (n == 0) then
+                return 1
+            else
+                return Mul(n, fact(n - 1));
+            end
+        end";
+
+        Script script = new Script();
+        
+      //  script.Globals["ApiMoveToRandom"] = (Func<int>) MyBrain.ApiMoveTo;
+
+        script.DoString(scriptCode);
+
+        DynValue res = script.Call(script.Globals["fact"], 4);
+
+        return res.Number;
     }
 }
 

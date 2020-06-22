@@ -16,20 +16,24 @@ public class Creature : MonoBehaviour
     {
         TextMesh.text = var;
     }
-    
+    public int Mul(int a, int b)
+    {
+        return a * b;
+    }
     public void Move(Vector3 destination)
     {
         DebugLog("Move "+ destination);
         Agent.SetDestination(destination);
     }
+    
     [Button]
-    public void MoveToRandom()
+    //todo expand to dynamic "y"
+    public int ApiMoveTo(float x,float y)
     {
-        float rndX = Random.Range(-20, 20);
-        float rndZ = Random.Range(-20, 20);
-        var rand = new Vector3(rndX, 1.56f, rndZ);
+        var rand = new Vector3(x, 1.56f, y);
         DebugLog("Move Random "+ rand);
         Agent.SetDestination(rand);
+        return 0;
     }
 
     public void Attack(Creature creature)
@@ -65,4 +69,7 @@ public class Creature : MonoBehaviour
     {
         
     }
+
+
+
 }

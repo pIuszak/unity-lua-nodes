@@ -391,6 +391,213 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1001 &329959651
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2867142116856242973, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116856242973, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116856242973, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116888878204, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116888878204, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116974817495, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116974817495, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142116974817495, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142117005086646, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2867142117005086646, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521086985833513784, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: MyBrain
+      value: 
+      objectReference: {fileID: 1403226971}
+    - target: {fileID: 5521086985833513784, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: FileName
+      value: If.lua
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521086985833513784, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: LuaCode
+      value: "-- base move func, provided by Delivr\r\n\r\n-- function config() is
+        no argument function, \r\n-- called before main() to establish numper of
+        params for input and output\r\nfunction config()\r\nend\r\n\r\n-- function
+        main() is called every state chage\r\nfunction main(args, slider)\r\n   
+        return ApiMoveToRandom(math.random(-range, range)) \r\nend\r\n\r\n-- todo
+        replace ref to NavMesh, use internal A* instead \r\nfunction OnUpdate_Move(range)\r\n   
+        \r\nend\r\n\r\n----------------------------------------------------------------\r\n--
+        Code of A* alghoritm\r\n-- credit to https://github.com/lattejed/a-star-lua\r\n----------------------------------------------------------------\r\n\r\nmodule(\"astar\",
+        package.seeall)\r\n\r\n----------------------------------------------------------------\r\n--
+        local variables\r\n----------------------------------------------------------------\r\n\r\nlocal
+        INF = 1 / 0\r\nlocal cachedPaths = nil\r\n\r\n----------------------------------------------------------------\r\n--
+        local functions\r\n----------------------------------------------------------------\r\nfunction
+        dist(x1, y1, x2, y2)\r\n\r\n    return math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2
+        - y1, 2))\r\nend\r\n\r\nfunction dist_between(nodeA, nodeB)\r\n\r\n    return
+        dist(nodeA.x, nodeA.y, nodeB.x, nodeB.y)\r\nend\r\n\r\nfunction heuristic_cost_estimate(nodeA,
+        nodeB)\r\n\r\n    return dist(nodeA.x, nodeA.y, nodeB.x, nodeB.y)\r\nend\r\n\r\nfunction
+        is_valid_node(node, neighbor)\r\n\r\n    return true\r\nend\r\n\r\nfunction
+        lowest_f_score(set, f_score)\r\n\r\n    local lowest, bestNode = INF, nil\r\n   
+        for _, node in ipairs(set) do\r\n        local score = f_score[node]\r\n       
+        if score < lowest then\r\n            lowest, bestNode = score, node\r\n       
+        end\r\n    end\r\n    return bestNode\r\nend\r\n\r\nfunction neighbor_nodes(theNode,
+        nodes)\r\n\r\n    local neighbors = {}\r\n    for _, node in ipairs(nodes)
+        do\r\n        if theNode ~= node and is_valid_node(theNode, node) then\r\n           
+        table.insert(neighbors, node)\r\n        end\r\n    end\r\n    return neighbors\r\nend\r\n\r\nfunction
+        not_in(set, theNode)\r\n\r\n    for _, node in ipairs(set) do\r\n       
+        if node == theNode then return false end\r\n    end\r\n    return true\r\nend\r\n\r\nfunction
+        remove_node(set, theNode)\r\n\r\n    for i, node in ipairs(set) do\r\n       
+        if node == theNode then\r\n            set[i] = set[#set]\r\n           
+        set[#set] = nil\r\n            break\r\n        end\r\n    end\r\nend\r\n\r\nfunction
+        unwind_path(flat_path, map, current_node)\r\n\r\n    if map[current_node]
+        then\r\n        table.insert(flat_path, 1, map[current_node])\r\n       
+        return unwind_path(flat_path, map, map[current_node])\r\n    else\r\n       
+        return flat_path\r\n    end\r\nend\r\n\r\n----------------------------------------------------------------\r\n--
+        pathfinding functions\r\n----------------------------------------------------------------\r\nfunction
+        a_star(start, goal, nodes, valid_node_func)\r\n\r\n    local closedset =
+        {}\r\n    local openset = { start }\r\n    local came_from = {}\r\n\r\n   
+        if valid_node_func then is_valid_node = valid_node_func end\r\n\r\n    local
+        g_score, f_score = {}, {}\r\n    g_score[start] = 0\r\n    f_score[start]
+        = g_score[start] + heuristic_cost_estimate(start, goal)\r\n\r\n    while
+        #openset > 0 do\r\n\r\n        local current = lowest_f_score(openset, f_score)\r\n       
+        if current == goal then\r\n            local path = unwind_path({}, came_from,
+        goal)\r\n            table.insert(path, goal)\r\n            return path\r\n       
+        end\r\n\r\n        remove_node(openset, current)\r\n        table.insert(closedset,
+        current)\r\n\r\n        local neighbors = neighbor_nodes(current, nodes)\r\n       
+        for _, neighbor in ipairs(neighbors) do\r\n            if not_in(closedset,
+        neighbor) then\r\n\r\n                local tentative_g_score = g_score[current]
+        + dist_between(current, neighbor)\r\n\r\n                if not_in(openset,
+        neighbor) or tentative_g_score < g_score[neighbor] then\r\n                   
+        came_from[neighbor] = current\r\n                    g_score[neighbor] =
+        tentative_g_score\r\n                    f_score[neighbor] = g_score[neighbor]
+        + heuristic_cost_estimate(neighbor, goal)\r\n                    if not_in(openset,
+        neighbor) then\r\n                        table.insert(openset, neighbor)\r\n                   
+        end\r\n                end\r\n            end\r\n        end\r\n    end\r\n   
+        return nil -- no valid path\r\nend\r\n\r\n----------------------------------------------------------------\r\n--
+        exposed functions\r\n----------------------------------------------------------------\r\nfunction
+        clear_cached_paths()\r\n\r\n    cachedPaths = nil\r\nend\r\n\r\nfunction
+        distance(x1, y1, x2, y2)\r\n\r\n    return dist(x1, y1, x2, y2)\r\nend\r\n\r\nfunction
+        path(start, goal, nodes, ignore_cache, valid_node_func)\r\n\r\n    if not
+        cachedPaths then cachedPaths = {} end\r\n    if not cachedPaths[start] then\r\n       
+        cachedPaths[start] = {}\r\n    elseif cachedPaths[start][goal] and not ignore_cache
+        then\r\n        return cachedPaths[start][goal]\r\n    end\r\n\r\n    local
+        resPath = a_star(start, goal, nodes, valid_node_func)\r\n    if not cachedPaths[start][goal]
+        and not ignore_cache then\r\n        cachedPaths[start][goal] = resPath\r\n   
+        end\r\n\r\n    return resPath\r\nend"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521086985986167026, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: MyBrain
+      value: 
+      objectReference: {fileID: 1403226971}
+    - target: {fileID: 7634616702874440865, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_Name
+      value: NodesEditor
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7653919777701590459, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: MyBrain
+      value: 
+      objectReference: {fileID: 1403226971}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df, type: 3}
 --- !u!114 &340042409 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6674084456143719519, guid: 59757c9c7f050ca4dbeca39778eefa74,
