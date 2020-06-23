@@ -16,7 +16,7 @@ using UnityEngine.UI;
 public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
-    [SerializeField] private Creature MyBrain;
+    [SerializeField] private Unit Brain;
     [SerializeField] private NodeSlot[] InNodeSlots;
     [SerializeField] private NodeSlot[] OutNodeSlots; 
     [SerializeField] private Node[] OutputNodes;
@@ -74,15 +74,23 @@ public class Node : DragDrop
         
         Debug.Log("FOR  : "+ InNodeSlots[0].Name);
         
+        // Automatically register all MoonSharpUserData types
+        UserData.RegisterAssembly();
+        
         //todo dynamic arguments passing to/from LUA script
-        script.Globals["ApiMoveTo"] = (Func<float,float,int>) MyBrain.ApiMoveTo;
+        //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
+        script.Globals["Brain"] = Brain;
+        // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
+       // script.Globals["Target"] = Brain.Targ;
         script.DoString(LuaCode);
         
         // if there is a slider, pass his value 
         var slider = MySlider ? MySlider.value : 0f;
 
-        DynValue res = script.Call(script.Globals["main"],  WrapData(), slider);
-        Debug.Log("LUA SAYS : " +res.Number);
+  
+
+     DynValue res = script.Call(script.Globals["main"],  new int[2]{1,2}, slider);
+     Debug.Log("LUA SAYS : " +res.Number);
     }
 
     // load lua code associated with this node  

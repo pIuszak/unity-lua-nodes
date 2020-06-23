@@ -7,13 +7,9 @@ end
 
 -- function main() is called every state chage
 function main(args, slider)
-    MoveToRandom(slider)
+    Brain.MoveTo(args[1], args[2])
 end
 
--- todo replace ref to NavMesh, use internal A* instead 
-function MoveToRandom(range)
-    ApiMoveTo(math.random(-range, range), math.random(-range, range))
-end
 
 ------------------------------------------------------------------
 ---- Code of A* alghoritm

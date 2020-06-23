@@ -8,31 +8,31 @@ using UnityEngine.Assertions;
 
 public class RougeCraftApi : MonoBehaviour
 {
-    private void Start()
-    {
-	    string code = @"
-	return function()
-		local x = 0
-		while true do
-			x = x + 1
-			coroutine.yield(x)
-		end
-	end
+	[MoonSharpUserData]
+	class MyClass
+	{
+		public double calcHypotenuse(double a, double b)
+		{
+			return Math.Sqrt(a * a + b * b);
+		}
+	}
+
+	double CallMyClass1()
+	{
+		string scriptCode = @"    
+		return obj.calcHypotenuse(3, 4);
 	";
 
-// Load the code and get the returned function
-	    Script script = new Script();
-	    DynValue function = script.DoString(code);
+		// Automatically register all MoonSharpUserData types
+		UserData.RegisterAssembly();
 
-// Create the coroutine in C#
-	    DynValue coroutine = script.CreateCoroutine(function);
+		Script script = new Script();
 
-// Resume the coroutine forever and ever..
-	    while (true)
-	    {
-		    DynValue x = coroutine.Coroutine.Resume();
-		    Console.WriteLine("{0}", x);
-	    }
- 
-    }
+		// Pass an instance of MyClass to the script in a global
+		script.Globals["obj"] = new MyClass();
+
+		DynValue res = script.DoString(scriptCode);
+
+		return res.Number;
+	}
 }
