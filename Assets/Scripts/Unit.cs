@@ -37,8 +37,11 @@ public class Unit : MonoBehaviour
     {
         if (other.GetComponent<Unit>())
         {
+            if(Target == null)
+            {
+                Target = other.GetComponent<Unit>();
+            }
             
-            Target = other.GetComponent<Unit>();
         }
     }
 
@@ -46,7 +49,11 @@ public class Unit : MonoBehaviour
     {
         if (other.GetComponent<Unit>())
         {
-            Target = other.GetComponent<Unit>();
+            if(Target == other.GetComponent<Unit>())
+            {
+                Target = null;
+            }
+            
         }
     }
 
@@ -83,11 +90,15 @@ public class Unit : MonoBehaviour
     public void Eat()
     {
         DebugLog("Eat " + Target.name);
+        Target.gameObject.SetActive(false);
+        Target = null;
     }
 
     public void Attack()
     {
         DebugLog("Attack " + Target.name);
+        Target.gameObject.SetActive(false);
+        Target = null;
         //Debug.Log("Attack");
     }
 
@@ -99,7 +110,7 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("GetDistanceFromTarget() "+ GetDistanceFromTarget());
+      //  Debug.Log("GetDistanceFromTarget() "+ GetDistanceFromTarget());
     }
 
     [Button]

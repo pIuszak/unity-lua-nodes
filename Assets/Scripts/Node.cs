@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using MoonSharp.Interpreter;
 using NaughtyAttributes;
 using UnityEngine;
@@ -11,48 +12,41 @@ using UnityEngine.UI;
  * 2 load lua script and compute or execute Unity API
  * 3 pass data to next node
  */
-
 [ExecuteInEditMode]
+[MoonSharpUserData]
 public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
-    [SerializeField] private Unit Brain;
-    [SerializeField] private NodeSlot[] InNodeSlots;
-    [SerializeField] private NodeSlot[] OutNodeSlots; 
-    [SerializeField] private Node[] OutputNodes;
-    [SerializeField] private Slider MySlider;
-
+    [SerializeField] protected Unit Brain;
+    [SerializeField] protected NodeSlot[] InNodeSlots;
+    [SerializeField] protected NodeSlot[] OutNodeSlots; 
+    [SerializeField] protected Node[] OutputNodes;
+    [SerializeField] protected Slider MySlider;
+    
     
     [SerializeField] private string FileName = "Test.lua";
-    [NaughtyAttributes.ResizableTextArea] [SerializeField] private string LuaCode;
+    [NaughtyAttributes.ResizableTextArea] [SerializeField] protected string LuaCode;
 
-    private void GetData(NodeSlot[] data)
+    protected void GetData(NodeSlot[] data)
     {
         InNodeSlots = data;
-        Test();
+        Execute();
     }
 
-    public void PassData()
+    protected void PassData()
     {
         foreach (var outputNode in OutputNodes)
         {
             GetData(OutNodeSlots);
         }
     }
-
-    public void Compute()
+    protected void Start()
     {
-        Debug.Log("Bip Bop Compute");
-        Test();
-    }
-    
-    private void Start()
-    {
-        LoadLua();
+     //   LoadLua();
     }
 
     // extract value list from inNodeSlots
-    private int[] WrapData()
+    protected int[] WrapData()
     {
         var length = InNodeSlots.Length;
         var ret = new int[length];
@@ -64,8 +58,52 @@ public class Node : DragDrop
         
         return ret;
     }
+    
+    public string Name;
+    // [SerializeField] protected NodeSlot[] InNodeSlots;
+    // [SerializeField] protected NodeSlot[] OutNodeSlots;
+
+    public GameObject NodePrefab;
+
+
+    public Transform dragdrop;
+    public void CreateNew(string nodeName, string[] inNodeSlotsNames, float[] inNodeSlotsValues,
+        string[] outNodeSlotsNames, float[] outNodeSlotsValues)
+    {
+
+       var node =  Instantiate(NodePrefab,dragdrop);
+       node.GetComponent<NodeConstructor>().CreateNode(nodeName,inNodeSlotsNames,inNodeSlotsValues,
+       outNodeSlotsNames,  outNodeSlotsValues);
+        
+        
+ 
+    }
+    
+    [UsedImplicitly]
+    public void ConfigureNode()
+    {
+        
+        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = System.IO.Path.Combine(filePath, FileName);
+        LuaCode = System.IO.File.ReadAllText(filePath);
+        Script script = new Script();
+
+        // Automatically register all MoonSharpUserData types
+        UserData.RegisterAssembly();
+        //todo dynamic arguments passing to/from LUA script
+        //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
+        script.Globals["Node"] = this;
+        // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
+        // script.Globals["Target"] = Brain.Targ;
+        script.DoString(LuaCode);
+        // if there is a slider, pass his value 
+        var slider = MySlider ? MySlider.value : 0f;
+        DynValue res = script.Call(script.Globals["config"]);
+        
+
+    }
     //this works for simple if and similar
-    void Test()
+    protected void Execute()
     {
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, FileName);
@@ -94,7 +132,7 @@ public class Node : DragDrop
     }
 
     // load lua code associated with this node  
-    private void LoadLua()
+    protected void LoadLua()
     {
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, FileName);
@@ -112,12 +150,12 @@ public class Node : DragDrop
         
 
     [Button]
-    void CallbackTestDebug()
+    protected void CallbackTestDebug()
     {
         Debug.Log(CallbackTest());
     }
 
-    private double CallbackTest()
+    protected double CallbackTest()
     {
         string scriptCode = @"    
         -- defines a factorial function
@@ -140,4 +178,3 @@ public class Node : DragDrop
         return res.Number;
     }
 }
-

@@ -20,8 +20,6 @@ public class UINodeLineRenderer : UILineRenderer
         updateLine = true;
         var position = transform.position;
         //m_points[0] = new Vector2(position.x, position.y);
-
-
     }
 
     void Start()

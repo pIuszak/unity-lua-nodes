@@ -1,7 +1,7 @@
 -- base move func, provided by Delivr
 
 -- function config() is no argument function, 
--- called before main() to establish numper of params for input and output
+-- called before main() to establish nummoper of params for input and output
 function config()
 end
 
@@ -12,7 +12,7 @@ end
 
 -- todo replace ref to NavMesh, use internal A* instead 
 function MoveToRandom(range)
-    Brain.MoveTo(math.random(-range, range), math.random(-range, range))hh
+    Brain.MoveTo(math.random(-range, range), math.random(-range, range))
 end
 
 ------------------------------------------------------------------

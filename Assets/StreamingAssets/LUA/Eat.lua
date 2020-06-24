@@ -11,13 +11,15 @@ function main(args, slider)
     --todo add eating preferences based on hunger lvl etc. 
     --todo 
 
+    if(Brain.GetDistanceFromTarget() <= 1) then
+        --if food is close eat 
+        Brain.Eat()
+    end
+
     --if food is in range go to food
     if (Brain.GetDistanceFromTarget() > 1) then
         Brain.MoveTo(Brain.Target.GetPositionOfAxis(0), Brain.Target.GetPositionOfAxis(2))
     end
     --if food is in range eat
-        if(Brain.GetDistanceFromTarget() <= 1) then
-            --if food is close eat 
-            Brain.Eat()
-        end
+
 end
