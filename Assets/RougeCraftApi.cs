@@ -1,38 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using MoonSharp.Interpreter;
-using NaughtyAttributes;
-using UnityEngine;
-using UnityEngine.Assertions;
+﻿	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using MoonSharp.Interpreter;
+	using NaughtyAttributes;
+	using UnityEngine;
+	using UnityEngine.Assertions;
 
-public class RougeCraftApi : MonoBehaviour
-{
-	[MoonSharpUserData]
-	class MyClass
+	public class RougeCraftApi : MonoBehaviour
 	{
-		public double calcHypotenuse(double a, double b)
+		public MyClass debug;
+		private void Start()
 		{
-			return Math.Sqrt(a * a + b * b);
+			MyClass myObject = new MyClass();
+			myObject.level = 1;
+			myObject.timeElapsed = 47.5f;
+			myObject.playerName = "Dr Charles Francis";
+			
+			string json = JsonUtility.ToJson(myObject);
+			
+			myObject = JsonUtility.FromJson<MyClass>(json);
+
+			debug = myObject;
 		}
 	}
-
-	double CallMyClass1()
+	[Serializable]
+	public class MyClass
 	{
-		string scriptCode = @"    
-		return obj.calcHypotenuse(3, 4);
-	";
-
-		// Automatically register all MoonSharpUserData types
-		UserData.RegisterAssembly();
-
-		Script script = new Script();
-
-		// Pass an instance of MyClass to the script in a global
-		script.Globals["obj"] = new MyClass();
-
-		DynValue res = script.DoString(scriptCode);
-
-		return res.Number;
+		public int level;
+		public float timeElapsed;
+		public string playerName;
 	}
-}

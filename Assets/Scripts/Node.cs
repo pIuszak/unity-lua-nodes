@@ -18,8 +18,8 @@ public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
     [SerializeField] protected Unit Brain;
-    [SerializeField] protected NodeSlot[] InNodeSlots;
-    [SerializeField] protected NodeSlot[] OutNodeSlots; 
+    [SerializeField] protected NodeElement[] InNodeSlots;
+    [SerializeField] protected NodeElement[] OutNodeSlots; 
     [SerializeField] protected Node[] OutputNodes;
     [SerializeField] protected Slider MySlider;
     
@@ -27,7 +27,7 @@ public class Node : DragDrop
     [SerializeField] private string FileName = "Test.lua";
     [NaughtyAttributes.ResizableTextArea] [SerializeField] protected string LuaCode;
 
-    protected void GetData(NodeSlot[] data)
+    protected void GetData(NodeElement[] data)
     {
         InNodeSlots = data;
         Execute();

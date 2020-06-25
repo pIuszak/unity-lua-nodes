@@ -40,27 +40,27 @@ public class NodeConstructor : MonoBehaviour
         Name.text = nodeName;
         for (int i = 0; i < inNodeSlotsNames.Length; i++)
         {
-            var go = Instantiate(InPrefab, InRoot);
-            go.transform.GetComponentInChildren<Text>().text = inNodeSlotsNames[i];
+            var inElement = Instantiate(InPrefab, InRoot);
+            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i]); 
         }
         //  ---------- Values 
         for (int i = 0; i < valNodeSlotsNames.Length; i++)
         {
-            var go = Instantiate(ValPrefab, ValRoot);
-            go.transform.GetComponentInChildren<Text>().text = valNodeSlotsNames[i];
+            var valElement = Instantiate(ValPrefab, ValRoot);
+            valElement.transform.GetComponentInChildren<NodeElement>().Init(valNodeSlotsNames[i]);
         }
-
+        //  ---------- Out 
         for (int i = 0; i < outNodeSlotsNames.Length; i++)
         {
-            var outSlot = Instantiate(OutPrefab, OutRoot);
-            outSlot.transform.GetComponentInChildren<Text>().text = outNodeSlotsNames[i];
+            var outElement = Instantiate(OutPrefab, OutRoot);
+            outElement.transform.GetComponentInChildren<NodeElement>().Init(outNodeSlotsNames[i]);
 
+            // Envoy & Line
             env[i] = Instantiate(Envoy, transform);
-
-            env[i].GetComponent<NodeEnvoy>().MyNodeSlot = outSlot.GetComponentInChildren<NodeSlot>();
+            env[i].GetComponent<NodeEnvoy>().MyNodeElement = outElement.GetComponentInChildren<NodeElement>();
 
             ConstraintSource constraintSource = new ConstraintSource();
-            constraintSource.sourceTransform = outSlot.transform;
+            constraintSource.sourceTransform = outElement.transform;
             constraintSource.weight = 1;
             envSrc[i] = Instantiate(EnvoySrc, transform);
 
@@ -73,7 +73,7 @@ public class NodeConstructor : MonoBehaviour
         }
 
         // wait for unity ui to refresh
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.22f);
         for (var i = 0; i < outNodeSlotsNames.Length; i++)
         {
             env[i].transform.localPosition = envSrc[i].transform.localPosition;

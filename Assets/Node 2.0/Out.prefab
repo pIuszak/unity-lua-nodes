@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1990615996009060433}
   - component: {fileID: 3676136966273418384}
   m_Layer: 0
-  m_Name: _In
+  m_Name: _out
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,6 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 6796734004898612620}
 --- !u!1 &2219808813568755413
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ public class NodeManager : MonoBehaviour
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
     protected string LuaCode;
 
+    public List<Node> NodesMemory = new List<Node>();
 
     [UsedImplicitly]
     public void CreateNode(string FileName)
@@ -34,13 +35,24 @@ public class NodeManager : MonoBehaviour
         // var slider = MySlider ? MySlider.value : 0f;
         DynValue res = script.Call(script.Globals["config"]);
     }
-
-
     public void CreateNew(string nodeName, string[] inNodeSlotsNames, string[] valNodeSlotsNames,
         string[] outNodeSlotsNames)
     {
         var node = Instantiate(NodePrefab, dragdrop);
         node.GetComponent<NodeConstructor>()
             .CreateNode(nodeName, inNodeSlotsNames, valNodeSlotsNames, outNodeSlotsNames);
+        NodesMemory.Add(node.GetComponent<Node>());
+    }
+    
+    // todo add loading from file 
+    public void SaveToJson(string json)
+    {
+        
+    }
+    
+    // todo add loading from file 
+    public void LoadFromJson(string json)
+    {
+        
     }
 }

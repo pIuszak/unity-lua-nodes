@@ -5,10 +5,10 @@ using UnityEngine;
 public class NodeEnvoy : DragDrop
 {
     //todo remove this reference, use events instead?
-    public NodeSlot MyNodeSlot;
+    public NodeElement MyNodeElement;
 
-    public NodeSlot GetData()
+    public NodeElement GetData()
     {
-        return MyNodeSlot;
+        return MyNodeElement;
     }
 }

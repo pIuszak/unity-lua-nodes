@@ -1,21 +1,33 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [System.Serializable]
-public class NodeSlot : NodeSlotBase, IDropHandler
+public class NodeElement : MonoBehaviour, IDropHandler
 {
-    public NodeSlot(string name, int value)
+    public string Name = " ";
+    public int Value = 0;
+    [SerializeField] private Text displayText;
+
+    public NodeElement(string name, int value)
     {
         Name = name;
         Value = value;
     }
 
-    public void SetNodeSlot(NodeSlot ns)
+    public void SetNodeSlot(NodeElement ns)
     {
         Name = ns.Name;
         Value = ns.Value;
     }
 
+    public void Init(string n)
+    {
+        displayText.text = Name = n;
+    }
+    
+ 
+    
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null)
