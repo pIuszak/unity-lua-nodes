@@ -4,6 +4,11 @@
 -- called before main() to establish numper of params for input and output
 -- 
 function config()
+    local nodeName = "Eat"
+    local inNode = { "Target", "Eat"}
+    local valueNode = {}
+    local outNode = {}
+    NodeManager.CreateNew(nodeName, inNode, valueNode ,outNode)
 end
 
 -- function main() is called every state chage

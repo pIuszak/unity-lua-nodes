@@ -13,7 +13,7 @@ using UnityEngine.UI;
  * 3 pass data to next node
  */
 [ExecuteInEditMode]
-[MoonSharpUserData]
+
 public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
@@ -63,45 +63,6 @@ public class Node : DragDrop
     // [SerializeField] protected NodeSlot[] InNodeSlots;
     // [SerializeField] protected NodeSlot[] OutNodeSlots;
 
-    public GameObject NodePrefab;
-
-
-    public Transform dragdrop;
-    public void CreateNew(string nodeName, string[] inNodeSlotsNames, float[] inNodeSlotsValues,
-        string[] outNodeSlotsNames, float[] outNodeSlotsValues)
-    {
-
-       var node =  Instantiate(NodePrefab,dragdrop);
-       node.GetComponent<NodeConstructor>().CreateNode(nodeName,inNodeSlotsNames,inNodeSlotsValues,
-       outNodeSlotsNames,  outNodeSlotsValues);
-        
-        
- 
-    }
-    
-    [UsedImplicitly]
-    public void ConfigureNode()
-    {
-        
-        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, FileName);
-        LuaCode = System.IO.File.ReadAllText(filePath);
-        Script script = new Script();
-
-        // Automatically register all MoonSharpUserData types
-        UserData.RegisterAssembly();
-        //todo dynamic arguments passing to/from LUA script
-        //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
-        script.Globals["Node"] = this;
-        // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
-        // script.Globals["Target"] = Brain.Targ;
-        script.DoString(LuaCode);
-        // if there is a slider, pass his value 
-        var slider = MySlider ? MySlider.value : 0f;
-        DynValue res = script.Call(script.Globals["config"]);
-        
-
-    }
     //this works for simple if and similar
     protected void Execute()
     {

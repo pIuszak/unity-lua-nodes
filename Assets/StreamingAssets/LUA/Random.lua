@@ -1,10 +1,10 @@
 -- base if func, provided by Delivr
 
 function config()
-    local nodeName = "if A > B"
-    local inNode = { "A", "B"}
-    local valueNode = {}
-    local outNode = {"true", "false"}
+    local nodeName = "Random"
+    local inNode = {}
+    local valueNode = {"min", "max"}
+    local outNode = {"Value"}
     NodeManager.CreateNew(nodeName, inNode, valueNode ,outNode)
 end
 

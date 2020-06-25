@@ -3,6 +3,11 @@
 -- function config() is no argument function, 
 -- called before main() to establish numper of params for input and output
 function config()
+    local nodeName = "Move"
+    local inNode = {"Target"}
+    local valueNode = {}
+    local outNode = {}
+    NodeManager.CreateNew(nodeName, inNode,valueNode, outNode)
 end
 
 -- function main() is called every state chage

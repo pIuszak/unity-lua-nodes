@@ -1,9 +1,18 @@
--- defines a factorial function
-function fact (n)
-    if (n == 0) then
-        return 1
-    else
-        return n*fact(n - 1)
-    end
+-- Brain, provided by Flint Games
+
+-- function config() is no argument function, 
+-- called before main() to establish number of params for input and output
+
+function config()
+    local nodeName = "MyBrain"
+    local inNode = {}
+    local valueNode = {}
+    local outNode = { "Health", "Hunger", "Stamina" }
+    NodeManager.CreateNew(nodeName, inNode,valueNode, outNode)
 end
-return fact(5)
+
+
+-- function main() is called every state chage
+function main(args, slider)
+end
+
