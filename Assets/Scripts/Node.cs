@@ -12,20 +12,32 @@ using UnityEngine.UI;
  * 2 load lua script and compute or execute Unity API
  * 3 pass data to next node
  */
-[ExecuteInEditMode]
 
+[Serializable]
+public class NodeConfig
+{
+    public Vector3 Position = Vector3.zero;
+    // todo 29.06
+    public List<Vector3> EnvoyPositions;
+    public List<string> Values;
+    
+    public string LuaScript = "Test.lua";
+}
+
+[ExecuteInEditMode]
+[Serializable]
 public class Node : DragDrop
 {
     // [SerializeField] private Node[] InputNodes;
     [SerializeField] protected Unit Brain;
     [SerializeField] protected NodeElement[] InNodeSlots;
-    [SerializeField] protected NodeElement[] OutNodeSlots; 
+    [SerializeField] protected NodeElement[] OutNodeSlots;
     [SerializeField] protected Node[] OutputNodes;
-    [SerializeField] protected Slider MySlider;
-    
-    
-    [SerializeField] private string FileName = "Test.lua";
-    [NaughtyAttributes.ResizableTextArea] [SerializeField] protected string LuaCode;
+    public NodeConfig NodeConfig;
+
+
+    [NaughtyAttributes.ResizableTextArea] [SerializeField]
+    protected string LuaCode;
 
     protected void GetData(NodeElement[] data)
     {
@@ -40,9 +52,15 @@ public class Node : DragDrop
             GetData(OutNodeSlots);
         }
     }
+
     protected void Start()
     {
-     //   LoadLua();
+        //   LoadLua();
+    }
+
+    public void SavePosition()
+    {
+        NodeConfig.Position = transform.localPosition;
     }
 
     // extract value list from inNodeSlots
@@ -55,10 +73,10 @@ public class Node : DragDrop
         {
             ret[i] = InNodeSlots[i].Value;
         }
-        
+
         return ret;
     }
-    
+
     public string Name;
     // [SerializeField] protected NodeSlot[] InNodeSlots;
     // [SerializeField] protected NodeSlot[] OutNodeSlots;
@@ -67,36 +85,36 @@ public class Node : DragDrop
     protected void Execute()
     {
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, FileName);
+        filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
         Script script = new Script();
-        
-        Debug.Log("FOR  : "+ InNodeSlots[0].Name);
-        
+
+        Debug.Log("FOR  : " + InNodeSlots[0].Name);
+
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-        
+
         //todo dynamic arguments passing to/from LUA script
         //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
         script.Globals["Brain"] = Brain;
         // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
-       // script.Globals["Target"] = Brain.Targ;
+        // script.Globals["Target"] = Brain.Targ;
         script.DoString(LuaCode);
-        
+
         // if there is a slider, pass his value 
-        var slider = MySlider ? MySlider.value : 0f;
+        //  var slider = MySlider ? MySlider.value : 0f;
 
-  
 
-     DynValue res = script.Call(script.Globals["main"],  new int[2]{1,2}, slider);
-     Debug.Log("LUA SAYS : " +res.Number);
+        // todo fix this argument passing
+        DynValue res = script.Call(script.Globals["main"], new int[2] {1, 2});
+        Debug.Log("LUA SAYS : " + res.Number);
     }
 
     // load lua code associated with this node  
-    protected void LoadLua()
+    public void LoadLua()
     {
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, FileName);
+        filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
 
         //  Debug.Log("My LUA Code");
@@ -108,7 +126,7 @@ public class Node : DragDrop
         // Instantiate the singleton
         //  new Actions( myLuaCode );
     }
-        
+
 
     [Button]
     protected void CallbackTestDebug()
@@ -129,8 +147,8 @@ public class Node : DragDrop
         end";
 
         Script script = new Script();
-        
-      //  script.Globals["ApiMoveToRandom"] = (Func<int>) MyBrain.ApiMoveTo;
+
+        //  script.Globals["ApiMoveToRandom"] = (Func<int>) MyBrain.ApiMoveTo;
 
         script.DoString(scriptCode);
 

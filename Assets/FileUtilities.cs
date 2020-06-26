@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.IO;
 
@@ -12,7 +13,7 @@ public static class FileUtilities
         //Write some text to the test.txt file
         StreamWriter writer = new StreamWriter(path, true);
         // todo write whole file,not single line
-        writer.WriteLine("Test");
+        writer.WriteLine(content);
         //writer.
         writer.Close();
 
@@ -24,15 +25,17 @@ public static class FileUtilities
         Debug.Log(asset.text);
     }
 
+    public static void ClearFile(string fileName)
+    {
+        File.WriteAllText("Assets/Resources/"+fileName, string.Empty);
+    }
+    
     [MenuItem("Tools/Read file")]
-    public static void ReadString()
+    public static StreamReader ReadString()
     {
         string path = "Assets/Resources/save.txt";
-
         //Read the text from directly from the test.txt file
-        StreamReader reader = new StreamReader(path); 
-        Debug.Log(reader.ReadToEnd());
-        reader.Close();
+        return new StreamReader(path);
     }
 
 }

@@ -35,27 +35,29 @@ public class NodeConstructor : MonoBehaviour
     {
         var env = new GameObject[MaxNodeLength];
         var envSrc = new GameObject[MaxNodeLength];
-        
-        //  ---------- In 
+
+        //  ---------- In ----------
         Name.text = nodeName;
         for (int i = 0; i < inNodeSlotsNames.Length; i++)
         {
             var inElement = Instantiate(InPrefab, InRoot);
-            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i]); 
+            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i]);
         }
-        //  ---------- Values 
+
+        //  ---------- Values ----------
         for (int i = 0; i < valNodeSlotsNames.Length; i++)
         {
             var valElement = Instantiate(ValPrefab, ValRoot);
             valElement.transform.GetComponentInChildren<NodeElement>().Init(valNodeSlotsNames[i]);
         }
-        //  ---------- Out 
+
+        //  ---------- Out ----------
         for (int i = 0; i < outNodeSlotsNames.Length; i++)
         {
             var outElement = Instantiate(OutPrefab, OutRoot);
             outElement.transform.GetComponentInChildren<NodeElement>().Init(outNodeSlotsNames[i]);
 
-            // Envoy & Line
+            // ---------- Envoy & Line ----------
             env[i] = Instantiate(Envoy, transform);
             env[i].GetComponent<NodeEnvoy>().MyNodeElement = outElement.GetComponentInChildren<NodeElement>();
 
@@ -73,7 +75,7 @@ public class NodeConstructor : MonoBehaviour
         }
 
         // wait for unity ui to refresh
-        yield return new WaitForSeconds(0.22f);
+        yield return new WaitForSeconds(0.23f);
         for (var i = 0; i < outNodeSlotsNames.Length; i++)
         {
             env[i].transform.localPosition = envSrc[i].transform.localPosition;

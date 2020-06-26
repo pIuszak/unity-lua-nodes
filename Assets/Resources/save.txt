@@ -1,21 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class save.txt : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
-Test
-Test
-Test
+{"Position":{"x":74.91326904296875,"y":171.67633056640626,"z":0.0},"LuaScript":"Sleep.lua"}
+{"Position":{"x":-472.36993408203127,"y":234.10400390625,"z":0.0},"LuaScript":"Eat.lua"}
+{"Position":{"x":-530.6358032226563,"y":-230.982666015625,"z":0.0},"LuaScript":"Attack.lua"}
+{"Position":{"x":472.36981201171877,"y":228.9017333984375,"z":0.0},"LuaScript":"If.lua"}
+{"Position":{"x":370.404541015625,"y":-156.0693359375,"z":0.0},"LuaScript":"Detect.lua"}
