@@ -26,16 +26,32 @@ public class NodeElement : MonoBehaviour, IDropHandler
         displayText.text = Name = n;
     }
     
- 
+    void OnTriggerEnter2D(Collider2D other) 
+    {
+        if(other.GetComponent<NodeEnvoy>())
+        {
+          //  Debug.Log ("Triggered " + other.name);
+            ForceDrop(other.GetComponent<NodeEnvoy>());
+        }
+    }
+
+    public void ForceDrop(NodeEnvoy nodeEnvoy)
+    {
+        nodeEnvoy.SetDest(gameObject);
+        SetNodeSlot(nodeEnvoy.GetData());
+        nodeEnvoy.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
+    }
     
+
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag != null)
-        {
-            var envoy = eventData.pointerDrag.GetComponent<NodeEnvoy>();
-            envoy.SetDest(gameObject);
-            SetNodeSlot(envoy.GetData());
-            eventData.pointerDrag.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
-        }
+        // Debug.Log("xd");
+        // if (eventData.pointerDrag != null)
+        // {
+        //     var envoy = eventData.pointerDrag.GetComponent<NodeEnvoy>();
+        //     envoy.SetDest(gameObject);
+        //     SetNodeSlot(envoy.GetData());
+        //     eventData.pointerDrag.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
+        // }
     }
 }

@@ -33,9 +33,10 @@ public class Node : DragDrop
     [SerializeField] protected NodeElement[] InNodeSlots;
     [SerializeField] protected NodeElement[] OutNodeSlots;
     [SerializeField] protected Node[] OutputNodes;
+
     public NodeConfig NodeConfig;
 
-
+    [SerializeField] public List<NodeEnvoy> NodeEnvoys = new List<NodeEnvoy>();
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
     protected string LuaCode;
 
@@ -53,6 +54,15 @@ public class Node : DragDrop
         }
     }
 
+    public void SetNewEnvoysPos(Vector3[] pos)
+    {
+        for (int i = 0; i < NodeEnvoys.Count; i++)
+        {
+            NodeEnvoys[i].transform.localPosition = pos[i];
+        }
+     
+    }
+
     protected void Start()
     {
         //   LoadLua();
@@ -61,6 +71,10 @@ public class Node : DragDrop
     public void SavePosition()
     {
         NodeConfig.Position = transform.localPosition;
+        foreach (var envoy in NodeEnvoys)
+        {
+            NodeConfig.EnvoyPositions.Add(envoy.transform.localPosition);
+        }
     }
 
     // extract value list from inNodeSlots
