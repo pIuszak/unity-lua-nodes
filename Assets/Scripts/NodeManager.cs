@@ -101,8 +101,7 @@ public class NodeManager : MonoBehaviour
         node.name = newName;
         //todo refactor plz 
         node.GetComponent<Node>().NodeConfig.LuaScript = currentScriptName;
-        node.GetComponent<Node>().LoadLua();
-      //   Debug.Log(nodeName+"------------------------------------");
+        //   Debug.Log(nodeName+"------------------------------------");
         if (nodeName == "Start")
         {
             StartNode = node.GetComponent<Node>();

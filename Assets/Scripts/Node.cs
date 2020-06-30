@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
 using MoonSharp.Interpreter;
-using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.UI;
 
 /*
  * 1 get data from prevous node
@@ -17,8 +13,7 @@ using UnityEngine.UI;
 public class NodeConfig
 {
     public Vector3 Position = Vector3.zero;
-
-    // todo 29.06
+    
     public List<Vector3> EnvoyPositions;
     public List<string> Values;
 
@@ -29,7 +24,6 @@ public class NodeConfig
 [Serializable]
 public class Node : DragDrop
 {
-    // [SerializeField] private Node[] InputNodes;
     [SerializeField] public Unit Brain;
     [SerializeField] protected NodeElement[] InNodeSlots;
     [SerializeField] protected NodeElement[] OutNodeSlots;
@@ -43,8 +37,8 @@ public class Node : DragDrop
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
     protected string LuaCode;
 
-    public bool alreadyExecuted;
-    public bool alreadyChecked;
+    public bool AlreadyExecuted;
+    public bool AlreadyChecked;
 
     public void ConnectToOtherOutputNodes(Node node)
     {
@@ -86,95 +80,45 @@ public class Node : DragDrop
             NodeConfig.EnvoyPositions.Add(envoy.transform.localPosition);
         }
     }
-
-    // extract value list from inNodeSlots
-    protected int[] WrapData()
-    {
-        var length = InNodeSlots.Length;
-        var ret = new int[length];
-
-        for (var i = 0; i < length; i++)
-        {
-            ret[i] = InNodeSlots[i].Value;
-        }
-
-        return ret;
-    }
-
-    public string Name;
-    // [SerializeField] protected NodeSlot[] InNodeSlots;
-    // [SerializeField] protected NodeSlot[] OutNodeSlots;
-
-    //this works for simple if and similar
+    
     public void Execute(params object[] args)
     {
-        if (alreadyExecuted) return;
-        if (!alreadyChecked)
+        if (AlreadyExecuted) return;
+        
+        // check if every input node is fulfilled
+        if (!AlreadyChecked)
         {
-            Debug.Log(" >>>>>>>> Make Sure All Input Are Executed" + NodeConfig.LuaScript);
             foreach (Node node in InputNodes)
             {
                 node.Execute();
-                alreadyChecked = true;
+                AlreadyChecked = true;
             }
 
-            if (alreadyChecked) return;
+            if (AlreadyChecked) return;
          
         }
-        alreadyExecuted = true;
+        AlreadyExecuted = true;
  
+        // import lua script
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
-        Script script = new Script();
-
-        // Debug.Log("FOR  : " + InNodeSlots[0].Name);
-
+        var script = new Script();
+        
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-
-        //todo dynamic arguments passing to/from LUA script
-        //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
-        Brain =FindObjectOfType<Unit>();
-        Debug.Log(Brain);
-        script.Globals["Brain"] = Brain;
-        Debug.Log(Brain);
-        // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
-        // script.Globals["Target"] = Brain.Targ;
-        script.DoString(LuaCode);
-
-        // if there is a slider, pass his value 
-        //  var slider = MySlider ? MySlider.value : 0f;
         
-        // todo fix this argument passing
+        // TODO
+        script.Globals["Brain"] = FindObjectOfType<Unit>();
+        script.DoString(LuaCode);
         
         DynValue res = script.Call(script.Globals["main"], args);
         
-        // Debug.Log("LUA SAYS : " + res.Number);
-
-        Debug.Log(" >>>>>>>> Next " + NodeConfig.LuaScript + res.Number);
-
-        foreach (Node outputNode in OutputNodes)
+        // execute next nodes 
+        foreach (var outputNode in OutputNodes)
         {
             outputNode.Execute(res.Number);
         }
-    }
-
-    // load lua code associated with this node  
-    public void LoadLua()
-    {
-        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
-        LuaCode = System.IO.File.ReadAllText(filePath);
-
-        //  Debug.Log("My LUA Code");
-        //  Debug.Log(myLuaCode);
-
-        DynValue res = Script.RunString(LuaCode);
-//        Debug.Log(res.Number);
-
-        // Instantiate the singleton
-        //  new Actions( myLuaCode );
     }
 
 }
