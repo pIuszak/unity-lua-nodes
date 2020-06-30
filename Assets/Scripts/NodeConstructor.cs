@@ -14,8 +14,9 @@ public class NodeConstructor : MonoBehaviour
     public GameObject Envoy;
     public GameObject EnvoySrc;
     public GameObject Line;
-
-
+    public Node MyNode;
+    public Unit Brain;
+    
     [SerializeField] private Transform InRoot;
     [SerializeField] private Transform ValRoot;
     [SerializeField] private Transform OutRoot;
@@ -42,26 +43,27 @@ public class NodeConstructor : MonoBehaviour
         for (int i = 0; i < inNodeSlotsNames.Length; i++)
         {
             var inElement = Instantiate(InPrefab, InRoot);
-            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i]);
+            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Values ----------
         for (int i = 0; i < valNodeSlotsNames.Length; i++)
         {
             var valElement = Instantiate(ValPrefab, ValRoot);
-            valElement.transform.GetComponentInChildren<NodeElement>().Init(valNodeSlotsNames[i]);
+            valElement.transform.GetComponentInChildren<NodeElement>().Init(valNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Out ----------
         for (int i = 0; i < outNodeSlotsNames.Length; i++)
         {
             var outElement = Instantiate(OutPrefab, OutRoot);
-            outElement.transform.GetComponentInChildren<NodeElement>().Init(outNodeSlotsNames[i]);
+            outElement.transform.GetComponentInChildren<NodeElement>().Init(outNodeSlotsNames[i], MyNode);
 
             // ---------- Envoy & Line ----------
             env[i] = Instantiate(Envoy, transform);
             env[i].GetComponent<NodeEnvoy>().MyNodeElement = outElement.GetComponentInChildren<NodeElement>();
             GetComponent<Node>().NodeEnvoys.Add(env[i].GetComponent<NodeEnvoy>());
+      
             ConstraintSource constraintSource = new ConstraintSource();
             constraintSource.sourceTransform = outElement.transform;
             constraintSource.weight = 1;

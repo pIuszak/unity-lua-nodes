@@ -56,15 +56,19 @@ public class Unit : MonoBehaviour
             
         }
     }
-
     [Button]
+    public int MoveToRandom()
+    {
+        MoveTo(Random.Range(-10, 10), Random.Range(-10, 10));
+        return 2137; 
+    }
+
     //todo expand to dynamic "y"
-    public int MoveTo(float x, float z)
+    public void MoveTo(float x, float z)
     {
         var target = new Vector3(x, 1.56f, z);
         DebugLog("Move " + target);
         Agent.SetDestination(target);
-        return 0;
     }
 
 

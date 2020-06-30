@@ -306,6 +306,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &1600671849938188060
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,6 +397,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &1748656856996530127
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,6 +523,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &2103132956867475605
 GameObject:
   m_ObjectHideFlags: 0
@@ -869,6 +875,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &3897085668268943737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,6 +1042,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Boolean
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &3897085668818677914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1134,7 +1144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
-  MyNodeSlot: {fileID: 3897085668367753804}
+  MyNodeElement: {fileID: 0}
 --- !u!1 &3897085668993803314
 GameObject:
   m_ObjectHideFlags: 0
@@ -2123,6 +2133,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &4955692284232988863
 GameObject:
   m_ObjectHideFlags: 0
@@ -2424,6 +2436,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &6972866663522100871
 GameObject:
   m_ObjectHideFlags: 0
@@ -2647,6 +2661,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
+  displayText: {fileID: 0}
+  MyNode: {fileID: 0}
 --- !u!1 &8349223166125720115
 GameObject:
   m_ObjectHideFlags: 0
@@ -2839,8 +2855,12 @@ MonoBehaviour:
   - {fileID: 0}
   OutNodeSlots: []
   OutputNodes: []
-  MySlider: {fileID: 3897085670199323089}
-  FileName: If.lua
+  NodeConfig:
+    Position: {x: 0, y: 0, z: 0}
+    EnvoyPositions: []
+    Values: []
+    LuaScript: Test.lua
+  NodeEnvoys: []
   LuaCode: "-- base if func, provided by Delivr\r\n\r\nfunction config()\r\n    \r\nend\r\n\r\nfunction
     main(args, slider)\r\n    if args[1] < slider  then\r\n        return true\r\n   
     else\r\n        return false\r\n    end\r\nend\r\n"
@@ -2866,6 +2886,7 @@ MonoBehaviour:
   EnvoySrc: {fileID: 6404926298008765607, guid: 07fc4a4fb79b0cc4ba7988f67eb3964f,
     type: 3}
   Line: {fileID: 1216502539490338680, guid: 35a8bb2167bcd3d46bd2d4b8f16d5a6d, type: 3}
+  MyNode: {fileID: 6719879755643755882}
   InRoot: {fileID: 5296344023240574367}
   ValRoot: {fileID: 6492410253233141209}
   OutRoot: {fileID: 8263179229727490791}

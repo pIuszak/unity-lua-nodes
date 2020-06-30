@@ -21,10 +21,19 @@ public class NodeManager : MonoBehaviour
     public List<Node> NodesMemory = new List<Node>();
     private string currentScriptName;
     private Vector3 currentScriptPosition;
+    public Node StartNode;
 
     private void Start()
     {
         InitializeDockButtons();
+    }
+
+    // this method invokes 
+    public void Play()
+    {
+        // run start 
+        StartNode.Execute();
+        // run ne
     }
 
     public void InitializeDockButtons()
@@ -74,6 +83,7 @@ public class NodeManager : MonoBehaviour
         // if there is a slider, pass his value 
         // var slider = MySlider ? MySlider.value : 0f;
         DynValue res = script.Call(script.Globals["config"]);
+        
     }
 
     [UsedImplicitly]
@@ -83,13 +93,21 @@ public class NodeManager : MonoBehaviour
     {
         var node = Instantiate(NodePrefab, DragDropRoot);
         node.transform.localPosition = currentScriptPosition;
+
+
         // node.transform.localPosition.
         var newName = currentScriptName.Replace(".lua", "_node");
 
         node.name = newName;
-
+        //todo refactor plz 
         node.GetComponent<Node>().NodeConfig.LuaScript = currentScriptName;
         node.GetComponent<Node>().LoadLua();
+      //   Debug.Log(nodeName+"------------------------------------");
+        if (nodeName == "Start")
+        {
+            StartNode = node.GetComponent<Node>();
+        }
+
         NodesMemory.Add(node.GetComponent<Node>());
 
 
@@ -138,8 +156,8 @@ public class NodeManager : MonoBehaviour
 
     IEnumerator Delayed(string[] lines)
     {
-        yield return new WaitForSeconds(5f);
-        Debug.Log("Deleyed");
+        yield return new WaitForSeconds(1f);
+     //  Debug.Log("Deleyed");
         for (int i = 0; i < lines.Length; i++)
         {
             var newNode = JsonUtility.FromJson<NodeConfig>(lines[i]);

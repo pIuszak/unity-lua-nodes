@@ -8,7 +8,7 @@ public class NodeElement : MonoBehaviour, IDropHandler
     public string Name = " ";
     public int Value = 0;
     [SerializeField] private Text displayText;
-
+    public Node MyNode;
     public NodeElement(string name, int value)
     {
         Name = name;
@@ -21,9 +21,10 @@ public class NodeElement : MonoBehaviour, IDropHandler
         Value = ns.Value;
     }
 
-    public void Init(string n)
+    public void Init(string n, Node node)
     {
         displayText.text = Name = n;
+        MyNode = node;
     }
     
     void OnTriggerEnter2D(Collider2D other) 
@@ -42,10 +43,10 @@ public class NodeElement : MonoBehaviour, IDropHandler
         nodeEnvoy.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
     }
     
-
+    
+    // old ui collision system  
     public void OnDrop(PointerEventData eventData)
     {
-        // Debug.Log("xd");
         // if (eventData.pointerDrag != null)
         // {
         //     var envoy = eventData.pointerDrag.GetComponent<NodeEnvoy>();
