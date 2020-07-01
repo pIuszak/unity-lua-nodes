@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using JetBrains.Annotations;
 using MoonSharp.Interpreter;
 using NaughtyAttributes;
 using TMPro;
@@ -8,71 +8,61 @@ using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 [MoonSharpUserData]
-public class Unit : MonoBehaviour
+public class Brain : MonoBehaviour
 {
     [Range(0, 100)] public int Health;
     [Range(0, 100)] public int Hunger;
     [Range(0, 100)] public int Stamina;
+    
     [SerializeField] private NavMeshAgent Agent;
     [SerializeField] private TextMeshPro TextMesh;
     [SerializeField] private Detector Detector;
-    public Unit Target;
-    private void DebugLog(string var)
+    public Brain Target;
+    
+    private void Debug(string var)
     {
         TextMesh.text = var;
     }
 
-    public int Mul(int a, int b)
-    {
-        return a * b;
-    }
-
+    [UsedImplicitly]
     public void Move(Vector3 destination)
     {
-        DebugLog("Move " + destination);
+        Debug("Move " + destination);
         Agent.SetDestination(destination);
     }
     
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Unit>())
+        if (other.GetComponent<Brain>())
         {
             if(Target == null)
             {
-                Target = other.GetComponent<Unit>();
+                Target = other.GetComponent<Brain>();
             }
             
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<Unit>())
+        if (other.GetComponent<Brain>())
         {
-            if(Target == other.GetComponent<Unit>())
+            if(Target == other.GetComponent<Brain>())
             {
                 Target = null;
             }
             
         }
     }
-    [Button]
-    public int MoveToRandom()
-    {
-        MoveTo(Random.Range(-10, 10), Random.Range(-10, 10));
-        return 2137; 
-    }
 
-    //todo expand to dynamic "y"
+    [UsedImplicitly]
     public void MoveTo(float x, float z)
     {
         var target = new Vector3(x, 1.56f, z);
-        DebugLog("Move " + target);
+        Debug("Move " + target);
         Agent.SetDestination(target);
     }
-
-
-
+    
+    [UsedImplicitly]
     public float GetPositionOfAxis(int axis)
     {
         switch (axis)
@@ -82,62 +72,67 @@ public class Unit : MonoBehaviour
             case 2: return transform.position.z;
         }
 
-        Debug.LogWarning("GetPositionOfAxis takes only arguments 0-2");
+        UnityEngine.Debug.LogWarning("GetPositionOfAxis takes only arguments 0-2");
         return -1;
     }
-
+    
+    [UsedImplicitly]
     public float GetDistanceFromTarget()
     {
         return Target == null ? -1 : Vector3.Distance(Target.gameObject.transform.position, transform.position);
     }
     
+    [UsedImplicitly]
     public void Eat()
     {
-        DebugLog("Eat " + Target.name);
+        Debug("Eat " + Target.name);
         Target.gameObject.SetActive(false);
         Target = null;
     }
-
+    
+    [UsedImplicitly]
     public void Attack()
     {
-        DebugLog("Attack " + Target.name);
+        Debug("Attack " + Target.name);
         Target.gameObject.SetActive(false);
         Target = null;
         //Debug.Log("Attack");
     }
-
+    
+    [UsedImplicitly]
     public void Die()
     {
       //  DebugLog(this.gameObject.name + " Died");
         gameObject.SetActive(false);
     }
-
-    private void Update()
-    {
-      //  Debug.Log("GetDistanceFromTarget() "+ GetDistanceFromTarget());
-    }
+    
 
     [Button]
     public void SleepSomeTime()
     {
         Sleep(Random.Range(0, 10));
     }
-
+    
+    [UsedImplicitly]
     public void Sleep(int seconds)
     {
         StartCoroutine(SleepC(seconds));
+    }
+    
+    [UsedImplicitly]
+    public void Wait(float time)
+    {
+        
     }
 
     private IEnumerator SleepC(int seconds)
     {
         while (seconds > 0)
         {
-            DebugLog("Sleep " + --seconds);
+            Debug("zzzZZZzzz " + --seconds);
             yield return new WaitForSeconds(1);
         }
     }
-
-    public void Wait(float time)
-    {
-    }
+    
+ 
 }

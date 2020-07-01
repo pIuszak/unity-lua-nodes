@@ -32,10 +32,19 @@ public class NodeManager : MonoBehaviour
     public void Play()
     {
         // run start 
+        foreach (Node node in NodesMemory)
+        {
+            node.ClearAction();
+        }
         StartNode.Execute();
         // run ne
     }
-
+    //
+    [UsedImplicitly]
+    public void RestartScene()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
     public void InitializeDockButtons()
     {
         var info = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "LUA"));

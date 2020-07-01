@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -6,19 +7,34 @@ using UnityEngine.UI;
 public class NodeElement : MonoBehaviour, IDropHandler
 {
     public string Name = " ";
-    public int Value = 0;
+    public int Value;
     [SerializeField] private Text displayText;
     public Node MyNode;
+    [Tooltip("Input Field is for Node Value's")]
+    public Text InputField;
     public NodeElement(string name, int value)
     {
         Name = name;
         Value = value;
     }
 
+    public void SetValue(string value)
+    {
+        Value = int.Parse(value);
+    }
+
+
     public void SetNodeSlot(NodeElement ns)
     {
         Name = ns.Name;
         Value = ns.Value;
+    }
+    
+    public void InitVal(string n, Node node)
+    {
+        displayText.text = Name = n;
+        MyNode = node;
+        node.AddValueNodeElement(this);
     }
 
     public void Init(string n, Node node)

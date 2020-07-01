@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -13,10 +14,7 @@ using UnityEngine;
 public class NodeConfig
 {
     public Vector3 Position = Vector3.zero;
-    
     public List<Vector3> EnvoyPositions;
-    public List<string> Values;
-
     public string LuaScript = "Test.lua";
 }
 
@@ -24,9 +22,10 @@ public class NodeConfig
 [Serializable]
 public class Node : DragDrop
 {
-    [SerializeField] public Unit Brain;
+    [SerializeField] public Brain Brain;
     [SerializeField] protected NodeElement[] InNodeSlots;
     [SerializeField] protected NodeElement[] OutNodeSlots;
+    [SerializeField] protected List<NodeElement> ValuesNodes = new List<NodeElement>();
     [SerializeField] protected List<Node> OutputNodes = new List<Node>();
     [SerializeField] protected List<Node> InputNodes = new List<Node>();
 
@@ -40,6 +39,10 @@ public class Node : DragDrop
     public bool AlreadyExecuted;
     public bool AlreadyChecked;
 
+    public void AddValueNodeElement(NodeElement nodeElement)
+    {
+        ValuesNodes.Add(nodeElement);
+    }
     public void ConnectToOtherOutputNodes(Node node)
     {
         OutputNodes.Add(node);
@@ -81,24 +84,25 @@ public class Node : DragDrop
         }
     }
     
+    public void 
+    
     public void Execute(params object[] args)
     {
+      
         if (AlreadyExecuted) return;
         
+        // todo 
         // check if every input node is fulfilled
         if (!AlreadyChecked)
         {
             foreach (Node node in InputNodes)
             {
-                node.Execute();
                 AlreadyChecked = true;
+                node.Execute();
+                
             }
-
             if (AlreadyChecked) return;
-         
         }
-        AlreadyExecuted = true;
- 
         // import lua script
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
@@ -109,16 +113,62 @@ public class Node : DragDrop
         UserData.RegisterAssembly();
         
         // TODO
-        script.Globals["Brain"] = FindObjectOfType<Unit>();
+        script.Globals["Brain"] = FindObjectOfType<Brain>();
         script.DoString(LuaCode);
+     
+        if (ValuesNodes.Count > 0)
+        {
+            
+            foreach (var nodeConfigValue in ValuesNodes)
+            {
+                // newArgs.Add(nodeConfigValue);
+               
+            }
+        }
+        var newArgs = args.ToList();
+        foreach (var nodeConfigValue in ValuesNodes)
+        {
+            // newArgs.Add(nodeConfigValue);
+            Debug.Log(nodeConfigValue + " YYY ");
+            newArgs.Add(nodeConfigValue.Value);
+        }
+
+        args =  newArgs.ToArray();
+        foreach (var x in args)
+        {
+            // newArgs.Add(nodeConfigValue);
+            Debug.Log(x + " ZZZ ");
+        }
+        
+        // foreach (var o in newArgs)
+        // {
+        //     Debug.Log(NodeConfig.LuaScript + " YYY "+o.ToString());
+        // }
+        //
+        // foreach (var o in args)
+        // {
+        //     Debug.Log(NodeConfig.LuaScript + " TTT "+o.ToString());
+        // }
         
         DynValue res = script.Call(script.Globals["main"], args);
+       // Debug.Log(NodeConfig.LuaScript + "  >>> "+res.Number);
+        
+        AlreadyExecuted = true;
         
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
+            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " +outputNode.NodeConfig.LuaScript + " >>> val >>>"+ res.Number);
             outputNode.Execute(res.Number);
         }
+    }
+    
+    
+    
+    public void ClearAction()
+    {
+        AlreadyExecuted = false;
+        AlreadyChecked = false;
     }
 
 }

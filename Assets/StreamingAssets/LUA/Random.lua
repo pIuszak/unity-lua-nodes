@@ -9,8 +9,8 @@ function config()
 end
 
 --todo for test 
-function main(args)
-    return math.random(10, 20);
+function main(min, max)
+    return math.random(min, max);
     -- return { math.random(-10, 10), math.random(-10, 10) }
     --    if args[1] > args[2] then
     --        return { 1.0, 0.0 }

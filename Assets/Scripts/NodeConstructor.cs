@@ -15,7 +15,7 @@ public class NodeConstructor : MonoBehaviour
     public GameObject EnvoySrc;
     public GameObject Line;
     public Node MyNode;
-    public Unit Brain;
+    public Brain Brain;
     
     [SerializeField] private Transform InRoot;
     [SerializeField] private Transform ValRoot;
@@ -50,7 +50,7 @@ public class NodeConstructor : MonoBehaviour
         for (int i = 0; i < valNodeSlotsNames.Length; i++)
         {
             var valElement = Instantiate(ValPrefab, ValRoot);
-            valElement.transform.GetComponentInChildren<NodeElement>().Init(valNodeSlotsNames[i], MyNode);
+            valElement.transform.GetComponentInChildren<NodeElement>().InitVal(valNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Out ----------
@@ -78,12 +78,12 @@ public class NodeConstructor : MonoBehaviour
         }
 
         // wait for unity ui to refresh
-        yield return new WaitForSeconds(0.23f);
+        yield return new WaitForSeconds(0.5f);
         for (var i = 0; i < outNodeSlotsNames.Length; i++)
         {
             env[i].transform.localPosition = envSrc[i].transform.localPosition;
         }
-        yield return new WaitForSeconds(0.23f);
+        yield return new WaitForSeconds(0.5f);
         if (envoyPos != null)
         {
             for (var i = 0; i < outNodeSlotsNames.Length; i++)
