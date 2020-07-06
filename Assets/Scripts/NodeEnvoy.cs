@@ -1,9 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     public NodeElement MyNodeElement;
+
+    public void Start()
+    {
+        GetComponent<Renderer>().sortingOrder = -1;
+    }
+
     public NodeElement GetData()
     {
         return MyNodeElement;

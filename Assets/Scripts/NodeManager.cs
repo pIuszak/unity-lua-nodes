@@ -117,6 +117,11 @@ public class NodeManager : MonoBehaviour
         }
 
         NodesMemory.Add(node.GetComponent<Node>());
+        var bgName = currentScriptName.Replace(".lua", "");
+        Debug.Log(bgName);
+        var img = Resources.Load<Sprite>("Icons/" + bgName);
+        var defImg = Resources.Load<Sprite>("Icons/Default");
+        node.GetComponent<Node>().BgImage.sprite = img != null ? img : defImg;
 
 
         node.GetComponent<NodeConstructor>()

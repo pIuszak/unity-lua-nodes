@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
  * 1 get data from prevous node
@@ -18,6 +20,7 @@ public class NodeConfig
     public string LuaScript = "Test.lua";
 }
 
+[MoonSharpUserData]
 [ExecuteInEditMode]
 [Serializable]
 public class Node : DragDrop
@@ -30,7 +33,7 @@ public class Node : DragDrop
     [SerializeField] protected List<Node> InputNodes = new List<Node>();
 
     public NodeConfig NodeConfig;
-
+    public Image BgImage;
     [SerializeField] public List<NodeEnvoy> NodeEnvoys = new List<NodeEnvoy>();
 
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
@@ -38,6 +41,8 @@ public class Node : DragDrop
 
     public bool AlreadyExecuted;
     public bool AlreadyChecked;
+    
+    public float NodeWaitTime = 1f;
 
     public void AddValueNodeElement(NodeElement nodeElement)
     {
@@ -83,13 +88,17 @@ public class Node : DragDrop
             NodeConfig.EnvoyPositions.Add(envoy.transform.localPosition);
         }
     }
+
+     public void Execute(params object[] args)
+     {
+         StartCoroutine(ExecuteC(args));
+     }
     
-    public void 
     
-    public void Execute(params object[] args)
+    public IEnumerator ExecuteC(params object[] args)
     {
       
-        if (AlreadyExecuted) return;
+        if (AlreadyExecuted) yield break;
         
         // todo 
         // check if every input node is fulfilled
@@ -98,12 +107,11 @@ public class Node : DragDrop
             foreach (Node node in InputNodes)
             {
                 AlreadyChecked = true;
-                node.Execute();
-                
+                if (node != this) node.Execute();
             }
-            if (AlreadyChecked) return;
+            if (AlreadyChecked) yield break;
         }
-        // import lua script
+        // import lua scriptbra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
@@ -114,32 +122,25 @@ public class Node : DragDrop
         
         // TODO
         script.Globals["Brain"] = FindObjectOfType<Brain>();
+        //script.Globals["Node"] = this;
         script.DoString(LuaCode);
      
         if (ValuesNodes.Count > 0)
         {
-            
             foreach (var nodeConfigValue in ValuesNodes)
             {
                 // newArgs.Add(nodeConfigValue);
-               
             }
         }
         var newArgs = args.ToList();
         foreach (var nodeConfigValue in ValuesNodes)
         {
             // newArgs.Add(nodeConfigValue);
-            Debug.Log(nodeConfigValue + " YYY ");
             newArgs.Add(nodeConfigValue.Value);
         }
 
         args =  newArgs.ToArray();
-        foreach (var x in args)
-        {
-            // newArgs.Add(nodeConfigValue);
-            Debug.Log(x + " ZZZ ");
-        }
-        
+
         // foreach (var o in newArgs)
         // {
         //     Debug.Log(NodeConfig.LuaScript + " YYY "+o.ToString());
@@ -153,6 +154,8 @@ public class Node : DragDrop
         DynValue res = script.Call(script.Globals["main"], args);
        // Debug.Log(NodeConfig.LuaScript + "  >>> "+res.Number);
         
+       yield return new WaitForSeconds(NodeWaitTime);
+       
         AlreadyExecuted = true;
         
         // execute next nodes 
@@ -163,10 +166,27 @@ public class Node : DragDrop
         }
     }
     
-    
-    
     public void ClearAction()
     {
+    
+        AlreadyExecuted = false;
+        AlreadyChecked = false;
+    }
+    
+    public void NodeClearAction()
+    {
+        StartCoroutine(ClearActionC());
+    }
+    IEnumerator ClearActionC()
+    {
+        yield return new WaitForSeconds(1f);
+
+        foreach (Node node in OutputNodes)
+        {
+            node.ClearAction();
+        }
+        
+        Debug.Log("ClearAction");
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }

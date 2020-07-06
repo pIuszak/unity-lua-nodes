@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6731176723073803533}
   - component: {fileID: 4044718990941681313}
+  - component: {fileID: -901837281492559062}
   m_Layer: 0
   m_Name: EnvoySrc
   m_TagString: Untagged
@@ -55,3 +56,14 @@ PositionConstraint:
   m_Sources:
   - sourceTransform: {fileID: 0}
     weight: 1
+--- !u!210 &-901837281492559062
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6404926298008765607}
+  m_Enabled: 1
+  m_SortingLayerID: 1511888419
+  m_SortingLayer: 1
+  m_SortingOrder: 0

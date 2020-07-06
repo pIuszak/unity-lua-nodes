@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
@@ -24,6 +25,8 @@ public class UINodeLineRenderer : UILineRenderer
 
     void Start()
     {
+     //  this.GetComponent<Renderer>().material.renderQueue = Int32.MaxValue;
+        
         SetAllDirty();
         myCanvas = GetComponentInParent<Canvas>();
     }
