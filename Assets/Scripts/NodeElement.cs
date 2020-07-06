@@ -7,11 +7,14 @@ using UnityEngine.UI;
 public class NodeElement : MonoBehaviour, IDropHandler
 {
     public string Name = " ";
-    public int Value;
+    public float Value;
     [SerializeField] private Text displayText;
+    [SerializeField] private InputField inputField;
     public Node MyNode;
+
     [Tooltip("Input Field is for Node Value's")]
     public Text InputField;
+
     public NodeElement(string name, int value)
     {
         Name = name;
@@ -20,7 +23,8 @@ public class NodeElement : MonoBehaviour, IDropHandler
 
     public void SetValue(string value)
     {
-        Value = int.Parse(value);
+        inputField.text = value;
+        Value = float.Parse(value);
     }
 
 
@@ -29,7 +33,7 @@ public class NodeElement : MonoBehaviour, IDropHandler
         Name = ns.Name;
         Value = ns.Value;
     }
-    
+
     public void InitVal(string n, Node node)
     {
         displayText.text = Name = n;
@@ -42,12 +46,12 @@ public class NodeElement : MonoBehaviour, IDropHandler
         displayText.text = Name = n;
         MyNode = node;
     }
-    
-    void OnTriggerEnter2D(Collider2D other) 
+
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.GetComponent<NodeEnvoy>())
+        if (other.GetComponent<NodeEnvoy>())
         {
-          //  Debug.Log ("Triggered " + other.name);
+            //  Debug.Log ("Triggered " + other.name);
             ForceDrop(other.GetComponent<NodeEnvoy>());
         }
     }
@@ -58,8 +62,8 @@ public class NodeElement : MonoBehaviour, IDropHandler
         SetNodeSlot(nodeEnvoy.GetData());
         nodeEnvoy.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
     }
-    
-    
+
+
     // old ui collision system  
     public void OnDrop(PointerEventData eventData)
     {

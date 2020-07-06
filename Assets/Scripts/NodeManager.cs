@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using JetBrains.Annotations;
 using MoonSharp.Interpreter;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -71,9 +72,14 @@ public class NodeManager : MonoBehaviour
         dockButton.MyIcon.SetNativeSize();
     }
 
+    public void CreateNode(string FileName)
+    {
+        CreateNode(FileName,new List<float>());
+    }
+
     // todo merge with CreateNodeFromConfig !!!!
     [UsedImplicitly]
-    public void CreateNode(string FileName)
+    public void CreateNode(string FileName,List<float> values)
     {
         currentScriptName = FileName;
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
@@ -118,7 +124,7 @@ public class NodeManager : MonoBehaviour
 
         NodesMemory.Add(node.GetComponent<Node>());
         var bgName = currentScriptName.Replace(".lua", "");
-        Debug.Log(bgName);
+      
         var img = Resources.Load<Sprite>("Icons/" + bgName);
         var defImg = Resources.Load<Sprite>("Icons/Default");
         node.GetComponent<Node>().BgImage.sprite = img != null ? img : defImg;
@@ -128,6 +134,11 @@ public class NodeManager : MonoBehaviour
             .CreateNode(nodeName, inNodeSlotsNames, valNodeSlotsNames, outNodeSlotsNames);
     }
 
+    public void LoadValuesFromJson()
+    {
+        
+    }
+
     [UsedImplicitly]
     public void SaveToJson()
     {
@@ -135,6 +146,7 @@ public class NodeManager : MonoBehaviour
         foreach (var node in NodesMemory)
         {
             node.SavePosition();
+            node.SaveValues();
             var json = JsonUtility.ToJson(node.NodeConfig);
 
             FileUtilities.WriteString(json, "save.txt");
@@ -152,7 +164,7 @@ public class NodeManager : MonoBehaviour
         {
             var newNode = JsonUtility.FromJson<NodeConfig>(s);
             currentScriptPosition = newNode.Position;
-            CreateNode(newNode.LuaScript);
+            CreateNode(newNode.LuaScript, newNode.Values);
             //  newNode
         }
 
@@ -166,6 +178,25 @@ public class NodeManager : MonoBehaviour
         //     //  newNode
         // }
     }
+    
+    [Button]
+    public void SmartSort()
+    {
+        var memX = -610.7512;
+        var memY = -284.0462;
+        var mem = 240;
+
+        
+
+
+            for (int i = 0; i < NodesMemory.Count; i++)
+            {
+                NodesMemory[i].transform.localPosition = Vector3.down * mem; 
+               // if((i % 3) == 0) NodesMemory[i].transform.localPosition = Vector3.right * mem; 
+               mem += 240;
+            }    
+            
+    }
 
     IEnumerator Delayed(string[] lines)
     {
@@ -175,6 +206,7 @@ public class NodeManager : MonoBehaviour
         {
             var newNode = JsonUtility.FromJson<NodeConfig>(lines[i]);
             NodesMemory[i].SetNewEnvoysPos(newNode.EnvoyPositions.ToArray());
+            NodesMemory[i].SetNewValues(newNode.Values.ToArray());
         }
     }
 }

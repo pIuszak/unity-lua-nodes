@@ -292,6 +292,7 @@ MonoBehaviour:
   Name: 
   Value: 0
   displayText: {fileID: 6796734004898612620}
+  inputField: {fileID: 641852722171420917}
   MyNode: {fileID: 0}
   InputField: {fileID: 9123346308055624806}
 --- !u!1 &8290741211727581047

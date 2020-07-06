@@ -4,18 +4,15 @@
 -- called before main() to establish numper of params for input and output
 function config()
     local nodeName = "Repeat"
-    local inNode = {"Action"}
+    local inNode = { "Action" }
     local valueNode = {}
     local outNode = {"Action"}
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
 
 -- function main() is called every state chage
-function main(args)
-    -- enter your code here
+function main()
+    Node.NodeSetWaitTime(10)
+    --Brain.MoveTo(args, -args)
 
-   
-    -- call next node
-    Node.NodeWaitTime = 5
-    Node.NodeClearAction()
 end

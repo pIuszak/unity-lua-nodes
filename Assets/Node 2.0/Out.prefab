@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.764151, g: 0.7317106, b: 0.7317106, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -90,6 +90,7 @@ MonoBehaviour:
   Name: 
   Value: 0
   displayText: {fileID: 6796734004898612620}
+  inputField: {fileID: 0}
   MyNode: {fileID: 0}
   InputField: {fileID: 0}
 --- !u!1 &2219808813568755413

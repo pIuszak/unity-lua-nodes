@@ -6,10 +6,7 @@ public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndD
 {
     public NodeElement MyNodeElement;
 
-    public void Start()
-    {
-        GetComponent<Renderer>().sortingOrder = -1;
-    }
+
 
     public NodeElement GetData()
     {
