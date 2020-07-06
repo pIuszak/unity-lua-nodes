@@ -37,15 +37,18 @@ public class NodeManager : MonoBehaviour
         {
             node.ClearAction();
         }
+
         StartNode.Execute();
         // run ne
     }
+
     //
     [UsedImplicitly]
     public void RestartScene()
     {
         Application.LoadLevel(Application.loadedLevel);
     }
+
     public void InitializeDockButtons()
     {
         var info = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "LUA"));
@@ -74,12 +77,12 @@ public class NodeManager : MonoBehaviour
 
     public void CreateNode(string FileName)
     {
-        CreateNode(FileName,new List<float>());
+        CreateNode(FileName, new List<float>());
     }
 
     // todo merge with CreateNodeFromConfig !!!!
     [UsedImplicitly]
-    public void CreateNode(string FileName,List<float> values)
+    public void CreateNode(string FileName, List<float> values)
     {
         currentScriptName = FileName;
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
@@ -98,7 +101,6 @@ public class NodeManager : MonoBehaviour
         // if there is a slider, pass his value 
         // var slider = MySlider ? MySlider.value : 0f;
         DynValue res = script.Call(script.Globals["config"]);
-        
     }
 
     [UsedImplicitly]
@@ -124,7 +126,7 @@ public class NodeManager : MonoBehaviour
 
         NodesMemory.Add(node.GetComponent<Node>());
         var bgName = currentScriptName.Replace(".lua", "");
-      
+
         var img = Resources.Load<Sprite>("Icons/" + bgName);
         var defImg = Resources.Load<Sprite>("Icons/Default");
         node.GetComponent<Node>().BgImage.sprite = img != null ? img : defImg;
@@ -136,7 +138,6 @@ public class NodeManager : MonoBehaviour
 
     public void LoadValuesFromJson()
     {
-        
     }
 
     [UsedImplicitly]
@@ -178,30 +179,34 @@ public class NodeManager : MonoBehaviour
         //     //  newNode
         // }
     }
-    
+
     [Button]
     public void SmartSort()
     {
-        var memX = -610.7512;
-        var memY = -284.0462;
-        var mem = 240;
+        var startX = -610.7512f;
+        var startY = 284.0462f;
+        var memX = -610.7512f;
+        var memY = 284.0462f;
+        var mem = 240f;
 
-        
 
-
-            for (int i = 0; i < NodesMemory.Count; i++)
+        for (int i = 0; i < NodesMemory.Count; i++)
+        {
+            NodesMemory[i].transform.localPosition =
+                new Vector3(memX, memY, 0);
+            memY -= mem;
+            if ((i % 3) == 2)
             {
-                NodesMemory[i].transform.localPosition = Vector3.down * mem; 
-               // if((i % 3) == 0) NodesMemory[i].transform.localPosition = Vector3.right * mem; 
-               mem += 240;
-            }    
-            
+                memX += mem;
+                memY = startY;
+            }
+        }
     }
 
     IEnumerator Delayed(string[] lines)
     {
         yield return new WaitForSeconds(1f);
-     //  Debug.Log("Deleyed");
+        //  Debug.Log("Deleyed");
         for (int i = 0; i < lines.Length; i++)
         {
             var newNode = JsonUtility.FromJson<NodeConfig>(lines[i]);
