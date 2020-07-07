@@ -23,12 +23,17 @@ public class NodeManager : MonoBehaviour
     private string currentScriptName;
     private Vector3 currentScriptPosition;
     public Node StartNode;
+    public static NodeManager Instance;
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
         InitializeDockButtons();
     }
-
+    
     // this method invokes 
     public void Play()
     {

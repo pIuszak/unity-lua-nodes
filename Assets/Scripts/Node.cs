@@ -33,6 +33,8 @@ public class Node : DragDrop
     [SerializeField] protected List<Node> OutputNodes = new List<Node>();
     [SerializeField] protected List<Node> InputNodes = new List<Node>();
 
+    public bool isBlocked;
+
     public NodeConfig NodeConfig;
     public Image BgImage;
     [SerializeField] public List<NodeEnvoy> NodeEnvoys = new List<NodeEnvoy>();
@@ -42,21 +44,27 @@ public class Node : DragDrop
 
     public bool AlreadyExecuted;
     public bool AlreadyChecked;
-    
+
     public float NodeWaitTime = 1f;
 
     public void SaveValues()
     {
         foreach (NodeElement valuesNode in ValuesNodes)
         {
-                NodeConfig.Values.Add(valuesNode.Value);        
+            NodeConfig.Values.Add(valuesNode.Value);
         }
     }
-    
+
+    public void Repeat()
+    {
+        NodeManager.Instance.Play();
+    }
+
     public void AddValueNodeElement(NodeElement nodeElement)
     {
         ValuesNodes.Add(nodeElement);
     }
+
     public void ConnectToOtherOutputNodes(Node node)
     {
         OutputNodes.Add(node);
@@ -80,6 +88,7 @@ public class Node : DragDrop
             GetData(OutNodeSlots);
         }
     }
+
     public void SetNewValues(float[] val)
     {
         for (int i = 0; i < ValuesNodes.Count; i++)
@@ -87,6 +96,7 @@ public class Node : DragDrop
             ValuesNodes[i].SetValue(val[i].ToString());
         }
     }
+
     public void SetNewEnvoysPos(Vector3[] pos)
     {
         for (int i = 0; i < NodeEnvoys.Count; i++)
@@ -104,47 +114,45 @@ public class Node : DragDrop
         }
     }
 
-     public void Execute(params object[] args)
-     {
-    Debug.Log("1");
-         if (AlreadyExecuted && InputNodes.Count != 1) return;
-         // todo 
-         // check if every input node is fulfilled
-         if (!AlreadyChecked && InputNodes.Count != 1)
-         {
-             Debug.Log("2");
-             foreach (Node node in InputNodes)
-             {
-                 AlreadyChecked = true;
-                 if (node != this) node.Execute();
-             }
-             Debug.Log("3");
-             if (AlreadyChecked) return;
-             Debug.Log("4");
-         }
-         StartCoroutine(ExecuteC(args));
-     }
+    public void Execute(params object[] args)
+    {
+        if (AlreadyExecuted && InputNodes.Count != 1) return;
+        // todo 
+        // check if every input node is fulfilled
+        if (!AlreadyChecked && InputNodes.Count != 1)
+        {
+            foreach (Node node in InputNodes)
+            {
+                AlreadyChecked = true;
+                if (node != this) node.Execute();
+            }
+
+            if (AlreadyChecked) return;
+        }
+
+        StartCoroutine(ExecuteC(args));
+    }
     
-    
+
     public IEnumerator ExecuteC(params object[] args)
     {
         yield return new WaitForSeconds(1f);
-        Debug.Log("ExecuteC "+ this.gameObject.name);
+        Debug.Log("ExecuteC " + this.gameObject.name);
 
         // import lua scriptbra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
         var script = new Script();
-        
+
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-        
+
         // TODO
         script.Globals["Brain"] = FindObjectOfType<Brain>();
         script.Globals["Node"] = this;
         script.DoString(LuaCode);
-     
+
         if (ValuesNodes.Count > 0)
         {
             foreach (var nodeConfigValue in ValuesNodes)
@@ -152,6 +160,7 @@ public class Node : DragDrop
                 // newArgs.Add(nodeConfigValue);
             }
         }
+
         var newArgs = args.ToList();
         foreach (var nodeConfigValue in ValuesNodes)
         {
@@ -159,7 +168,7 @@ public class Node : DragDrop
             newArgs.Add(nodeConfigValue.Value);
         }
 
-        args =  newArgs.ToArray();
+        args = newArgs.ToArray();
 
         // foreach (var o in newArgs)
         // {
@@ -170,40 +179,48 @@ public class Node : DragDrop
         // {
         //     Debug.Log(NodeConfig.LuaScript + " TTT "+o.ToString());
         // }
-        
+        //  Debug.Log(NodeConfig.LuaScript + "  >>> "+ args.Length);
         DynValue res = script.Call(script.Globals["main"], args);
-       // Debug.Log(NodeConfig.LuaScript + "  >>> "+res.Number);
-        
-       yield return new WaitForSeconds(NodeWaitTime);
-       
+
+        yield return new WaitForSeconds(NodeWaitTime);
+
         AlreadyExecuted = true;
-        
+
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
-            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " +outputNode.NodeConfig.LuaScript + " >>> val >>>"+ res.Number);
+            if (outputNode.isBlocked) continue;
+            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" +
+                      res.Number);
             outputNode.Execute(res.Number);
         }
     }
-    
+
+    public void BlockNode(int val)
+    {
+        // Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
+        OutputNodes[val].isBlocked = true;
+    }
+
     public int NodeSetWaitTime(float val)
     {
-        Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NodeSetWaitTime");
+        // Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NodeSetWaitTime "+ val);
         NodeWaitTime = val;
         return 0;
     }
-    
+
+
     public void ClearAction()
     {
-    
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }
-    
+
     public void NodeClearAction()
     {
         StartCoroutine(ClearActionC());
     }
+
     IEnumerator ClearActionC()
     {
         yield return new WaitForSeconds(1f);
@@ -212,9 +229,8 @@ public class Node : DragDrop
         {
             node.ClearAction();
         }
-        
+
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }
-
 }

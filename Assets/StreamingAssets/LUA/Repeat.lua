@@ -6,13 +6,13 @@ function config()
     local nodeName = "Repeat"
     local inNode = { "Action" }
     local valueNode = {}
-    local outNode = {"Action"}
+    local outNode = {}
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
 
 -- function main() is called every state chage
 function main()
-    Node.NodeSetWaitTime(10)
+    Node.Repeat()
     --Brain.MoveTo(args, -args)
 
 end

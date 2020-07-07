@@ -4,7 +4,7 @@
 -- called before main() to establish numper of params for input and output
 function config()
     local nodeName = "Move"
-    local inNode = { "Action", "Target" ,"Repeat"}
+    local inNode = { "Action", "Target"}
     local valueNode = {}
     local outNode = {"Action"}
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)

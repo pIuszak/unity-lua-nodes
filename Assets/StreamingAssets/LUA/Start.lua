@@ -7,7 +7,7 @@ function config()
     local nodeName = "Start"
     local inNode = {}
     local valueNode = {}
-    local outNode = {"Execute"}
+    local outNode = {"Action"}
     NodeManager.CreateNew(nodeName, inNode, valueNode ,outNode)
 end
 
