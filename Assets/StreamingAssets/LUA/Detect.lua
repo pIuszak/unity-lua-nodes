@@ -1,31 +1,31 @@
--- base Eat func, provided by Delivr
+-- base if func, provided by Delivr
 
--- function config() is no argument function, 
--- called before main() to establish numper of params for input and output
--- 
+--function main(args)
+--    if args[1] > args[2] then
+--        return { 1.0, 0.0 }
+--    else
+--        return { 0.0, 1.0 }
+--    end       
+--end
+
 function config()
     local nodeName = "Detect"
-    local inNode = {}
-    local valueNode = {"Tag"}
-    local outNode = {"Target"}
-    NodeManager.CreateNew(nodeName, inNode,valueNode, outNode)
+    local inNode = { "Action" }
+    local valueNode = { "Tag" }
+    local outNode = { "true", "false" }
+    NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
 
-
--- function main() is called every state chage
-function main(args, slider)
-    --todo add eating preferences based on hunger lvl etc. 
-    --todo 
-
-    if(Brain.GetDistanceFromTarget() <= 1) then
-        --if food is close eat 
-        Brain.Eat()
-    end
-
-    --if food is in range go to food
-    if (Brain.GetDistanceFromTarget() > 1) then
-        Brain.MoveTo(Brain.Target.GetPositionOfAxis(0), Brain.Target.GetPositionOfAxis(2))
-    end
-    --if food is in range eat
-
+local function isempty(s)
+    return s == nil or s == ''
 end
+-- 
+function main(args)
+    
+    if Brain.Detect(args) then
+        Node.BlockNode(1)
+    else
+        Node.BlockNode(0)
+    end
+end
+

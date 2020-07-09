@@ -7,5 +7,5 @@ function config()
 end
 
 function main(args)
-    return args;
+    return tonumber(args)
 end

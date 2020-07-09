@@ -13,4 +13,5 @@ end
 
 -- function main() is called every state chage
 function main(args, slider)
+    return {0}
 end

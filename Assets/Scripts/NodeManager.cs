@@ -82,12 +82,12 @@ public class NodeManager : MonoBehaviour
 
     public void CreateNode(string FileName)
     {
-        CreateNode(FileName, new List<float>());
+        CreateNode(FileName, new List<string>());
     }
 
     // todo merge with CreateNodeFromConfig !!!!
     [UsedImplicitly]
-    public void CreateNode(string FileName, List<float> values)
+    public void CreateNode(string FileName, List<string> values)
     {
         currentScriptName = FileName;
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");

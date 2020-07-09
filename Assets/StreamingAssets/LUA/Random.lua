@@ -10,11 +10,6 @@ end
 
 --todo for test 
 function main(min, max)
-    return math.random(min, max);
-    -- return { math.random(-10, 10), math.random(-10, 10) }
-    --    if args[1] > args[2] then
-    --        return { 1.0, 0.0 }
-    --    else
-    --        return { 0.0, 1.0 }
-    --    end
+    --return math.random(min, max);
+     return { 21,37 }
 end

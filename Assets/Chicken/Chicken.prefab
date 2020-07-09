@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 521064279}
   - component: {fileID: 521064280}
+  - component: {fileID: 656903600688132510}
   m_Layer: 0
   m_Name: Detector
   m_TagString: Untagged
@@ -44,6 +45,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 5
   m_Center: {x: 0, y: 0, z: 4}
+--- !u!114 &656903600688132510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521064278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f996c1552b967e42b93b052a19cc6a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentlyDetected: []
 --- !u!1 &310785956347290031
 GameObject:
   m_ObjectHideFlags: 0
@@ -1110,7 +1124,8 @@ GameObject:
   - component: {fileID: 9172246066504250272}
   - component: {fileID: 1403226972}
   - component: {fileID: 1403226973}
-  - component: {fileID: 1403226971}
+  - component: {fileID: 1831806871968288011}
+  - component: {fileID: 8859729294288106582}
   m_Layer: 0
   m_Name: Chicken
   m_TagString: blueAgent
@@ -1219,7 +1234,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1403226971
+--- !u!135 &1831806871968288011
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8884145289041058142}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 5
+  m_Center: {x: 0, y: 0, z: 4}
+--- !u!114 &8859729294288106582
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1231,13 +1259,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fad743071ba84fb409b5a3e3bcbc034d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 0
-  Hunger: 0
-  Stamina: 0
+  health: 50
+  stamina: 90
+  hunger: 80
   Agent: {fileID: 9172246066504250272}
   TextMesh: {fileID: 6674084456143719519}
   Detector: {fileID: 0}
   Target: {fileID: 0}
+  animator: {fileID: 1403226973}
 --- !u!1 &9211326794952107772
 GameObject:
   m_ObjectHideFlags: 0

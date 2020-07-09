@@ -10,14 +10,37 @@ using Random = UnityEngine.Random;
 [MoonSharpUserData]
 public class Brain : MonoBehaviour
 {
-    [Range(0, 100)] public int Health;
-    [Range(0, 100)] public int Hunger;
-    [Range(0, 100)] public int Stamina;
+    [Range(0, 100)]
+    [SerializeField]
+    private float health = 100;
+    public float Health
+    {
+        get => health;
+        protected set => health = value;
+    }
+    [Range(0, 100)]
+    [SerializeField]
+    private float stamina = 90;
+    public float Stamina
+    {
+        get => stamina;
+        protected set => stamina = value;
+    }
+    
+    [Range(0, 100)]
+    [SerializeField]
+    private float hunger = 80;
+    public float Hunger
+    {
+        get => hunger;
+        protected set => hunger = value;
+    }
     
     [SerializeField] private NavMeshAgent Agent;
     [SerializeField] private TextMeshPro TextMesh;
     [SerializeField] private Detector Detector;
     public Brain Target;
+    [SerializeField] private Animator animator;
     
     private void Debug(string var)
     {
@@ -31,28 +54,7 @@ public class Brain : MonoBehaviour
         Agent.SetDestination(destination);
     }
     
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Brain>())
-        {
-            if(Target == null)
-            {
-                Target = other.GetComponent<Brain>();
-            }
-            
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.GetComponent<Brain>())
-        {
-            if(Target == other.GetComponent<Brain>())
-            {
-                Target = null;
-            }
-            
-        }
-    }
+
 
     [UsedImplicitly]
     public void MoveTo(float x, float z)
@@ -107,14 +109,10 @@ public class Brain : MonoBehaviour
     }
     
 
-    [Button]
-    public void SleepSomeTime()
-    {
-        Sleep(Random.Range(0, 10));
-    }
+ 
     
     [UsedImplicitly]
-    public void Sleep(int seconds)
+    public void Sleep(string seconds)
     {
         StartCoroutine(SleepC(seconds));
     }
@@ -125,13 +123,19 @@ public class Brain : MonoBehaviour
         
     }
 
-    private IEnumerator SleepC(int seconds)
+    private IEnumerator SleepC(string val)
     {
+        var seconds = float.Parse(val);
+        UnityEngine.Debug.Log("Sleep C" + seconds);
+        animator.CrossFade("Sleep",0.3f);
         while (seconds > 0)
         {
             Debug("zzzZZZzzz " + --seconds);
             yield return new WaitForSeconds(1);
         }
+        UnityEngine.Debug.Log("Sleep C END" + seconds);
+        animator.CrossFade("Idle",0.3f);
+        Debug(" ");
     }
     
  

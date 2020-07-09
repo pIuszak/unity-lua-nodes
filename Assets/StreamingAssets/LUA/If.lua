@@ -29,9 +29,9 @@ function main(A, B)
         return nil
     end
         if A > B then
-            Node.BlockNode(2)
-        else
             Node.BlockNode(1)
+        else
+            Node.BlockNode(0)
         end
 end
 

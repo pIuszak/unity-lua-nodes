@@ -17,7 +17,7 @@ public class NodeConfig
 {
     public Vector3 Position = Vector3.zero;
     public List<Vector3> EnvoyPositions;
-    public List<float> Values;
+    public List<string> Values;
     public string LuaScript = "Test.lua";
 }
 
@@ -47,6 +47,8 @@ public class Node : DragDrop
 
     public float NodeWaitTime = 1f;
 
+    public int argCounter = 0;
+    public List<object> currentArgs = new List<object>();
     public void SaveValues()
     {
         foreach (NodeElement valuesNode in ValuesNodes)
@@ -89,11 +91,11 @@ public class Node : DragDrop
         }
     }
 
-    public void SetNewValues(float[] val)
+    public void SetNewValues(string[] val)
     {
         for (int i = 0; i < ValuesNodes.Count; i++)
         {
-            ValuesNodes[i].SetValue(val[i].ToString());
+            ValuesNodes[i].SetValue(val[i]);
         }
     }
 
@@ -137,7 +139,7 @@ public class Node : DragDrop
     public IEnumerator ExecuteC(params object[] args)
     {
         yield return new WaitForSeconds(1f);
-        Debug.Log("ExecuteC " + this.gameObject.name);
+       // Debug.Log("ExecuteC " + this.gameObject.name);
 
         // import lua scriptbra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
@@ -161,14 +163,20 @@ public class Node : DragDrop
             }
         }
 
-        var newArgs = args.ToList();
+        //var newArgs = args.ToList();
+        // ------ add arguments from value nodes 
         foreach (var nodeConfigValue in ValuesNodes)
         {
-            // newArgs.Add(nodeConfigValue);
-            newArgs.Add(nodeConfigValue.Value);
+            currentArgs.Add(nodeConfigValue.Value);
+        }
+        
+        // ------ add arguments from previous nodes 
+        var newArgs = args.ToList();
+        foreach (var newArg in newArgs)
+        {
+            currentArgs.Add(newArg);
         }
 
-        args = newArgs.ToArray();
 
         // foreach (var o in newArgs)
         // {
@@ -180,25 +188,26 @@ public class Node : DragDrop
         //     Debug.Log(NodeConfig.LuaScript + " TTT "+o.ToString());
         // }
         //  Debug.Log(NodeConfig.LuaScript + "  >>> "+ args.Length);
-        DynValue res = script.Call(script.Globals["main"], args);
-
+        
+        DynValue res = script.Call(script.Globals["main"], currentArgs.ToArray());
+        Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
         yield return new WaitForSeconds(NodeWaitTime);
 
         AlreadyExecuted = true;
-
+        
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
             if (outputNode.isBlocked) continue;
-            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" +
-                      res.Number);
-            outputNode.Execute(res.Number);
+            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
+            outputNode.Execute(res.Tuple);
         }
+        currentArgs.Clear();
     }
 
     public void BlockNode(int val)
-    {
-        // Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
+    { 
+        Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
         OutputNodes[val].isBlocked = true;
     }
 
