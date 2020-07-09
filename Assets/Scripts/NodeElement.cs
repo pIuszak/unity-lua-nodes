@@ -1,4 +1,5 @@
 ﻿using System;
+using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public class NodeElement : MonoBehaviour, IDropHandler
 {
     public string Name = " ";
-    public string Value;
+    public DynValue Value;
     [SerializeField] private Text displayText;
     [SerializeField] private InputField inputField;
     public Node MyNode;
@@ -15,15 +16,15 @@ public class NodeElement : MonoBehaviour, IDropHandler
     [Tooltip("Input Field is for Node Value's")]
     public Text InputField;
 
-    public NodeElement(string name, string value)
+    public NodeElement(string name, DynValue value)
     {
         Name = name;
         Value = value;
     }
 
-    public void SetValue(string value)
+    public void SetValue(DynValue value)
     {
-        inputField.text = value;
+        inputField.text = value.String;
         Value = value;
     }
 

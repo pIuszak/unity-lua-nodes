@@ -8,8 +8,6 @@ function config()
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
 
---todo for test 
 function main(min, max)
-    --return math.random(min, max);
-     return { 21,37 }
+    return { math.random(min, max), math.random(min, max) }
 end

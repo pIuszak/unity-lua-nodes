@@ -17,25 +17,24 @@ public class NewBehaviourScript : MonoBehaviour
         return t;
     }
 
-    
-    private static Table TableTestReverseWithTable()
+
+    private Table TableTestReverseWithTable(Table t)
     {
         string scriptCode = @"    
-        return dosum { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,123,123,12,31,23}
-    ";
+        return dosum { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,123,123,12,31,23}";
 
         Script script = new Script();
 
-        script.Globals["dosum"] = (Func<Table, Table>)Sum;
+        script.Globals["dosum"] = (Func<Table, Table>) Sum;
 
         DynValue res = script.DoString(scriptCode);
 
         return res.Table;
     }
-    
+
     [Button]
     public void Test()
     {
-        Debug.Log(TableTestReverseWithTable().RawGet(12));
+        // Debug.Log(TableTestReverseWithTable(new Table(0,0)));
     }
 }

@@ -12,7 +12,7 @@ end
 
 -- function main() is called every state chage
 function main(args)
-    Brain.MoveTo(4,2.0)
+    Brain.MoveTo(args[1],args[2])
 end
 
 

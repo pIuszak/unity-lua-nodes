@@ -42,8 +42,7 @@ public class NodeManager : MonoBehaviour
         {
             node.ClearAction();
         }
-
-        StartNode.Execute();
+        StartNode.Execute(new Table(new Script()));
         // run ne
     }
 
@@ -82,12 +81,12 @@ public class NodeManager : MonoBehaviour
 
     public void CreateNode(string FileName)
     {
-        CreateNode(FileName, new List<string>());
+        CreateNode(FileName, new List<DynValue>());
     }
 
     // todo merge with CreateNodeFromConfig !!!!
     [UsedImplicitly]
-    public void CreateNode(string FileName, List<string> values)
+    public void CreateNode(string FileName, List<DynValue> values)
     {
         currentScriptName = FileName;
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");

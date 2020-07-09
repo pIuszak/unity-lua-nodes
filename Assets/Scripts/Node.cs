@@ -17,7 +17,7 @@ public class NodeConfig
 {
     public Vector3 Position = Vector3.zero;
     public List<Vector3> EnvoyPositions;
-    public List<string> Values;
+    public List<DynValue> Values;
     public string LuaScript = "Test.lua";
 }
 
@@ -48,7 +48,7 @@ public class Node : DragDrop
     public float NodeWaitTime = 1f;
 
     public int argCounter = 0;
-    public List<object> currentArgs = new List<object>();
+    public List<DynValue> currentArgs = new List<DynValue>();
     public void SaveValues()
     {
         foreach (NodeElement valuesNode in ValuesNodes)
@@ -77,21 +77,21 @@ public class Node : DragDrop
         InputNodes.Add(node);
     }
 
-    protected void GetData(NodeElement[] data)
-    {
-        InNodeSlots = data;
-        Execute();
-    }
+    // protected void GetData(NodeElement[] data)
+    // {
+    //     InNodeSlots = data;
+    //     Execute(args);
+    // }
+    //
+    // protected void PassData()
+    // {
+    //     foreach (var outputNode in OutputNodes)
+    //     {
+    //         GetData(OutNodeSlots);
+    //     }
+    // }
 
-    protected void PassData()
-    {
-        foreach (var outputNode in OutputNodes)
-        {
-            GetData(OutNodeSlots);
-        }
-    }
-
-    public void SetNewValues(string[] val)
+    public void SetNewValues(DynValue[] val)
     {
         for (int i = 0; i < ValuesNodes.Count; i++)
         {
@@ -116,7 +116,7 @@ public class Node : DragDrop
         }
     }
 
-    public void Execute(params object[] args)
+    public void Execute(Table args)
     {
         if (AlreadyExecuted && InputNodes.Count != 1) return;
         // todo 
@@ -126,7 +126,7 @@ public class Node : DragDrop
             foreach (Node node in InputNodes)
             {
                 AlreadyChecked = true;
-                if (node != this) node.Execute();
+                if (node != this) node.Execute(args);
             }
 
             if (AlreadyChecked) return;
@@ -136,7 +136,7 @@ public class Node : DragDrop
     }
     
 
-    public IEnumerator ExecuteC(params object[] args)
+    public IEnumerator ExecuteC(Table args)
     {
         yield return new WaitForSeconds(1f);
        // Debug.Log("ExecuteC " + this.gameObject.name);
@@ -164,43 +164,38 @@ public class Node : DragDrop
         }
 
         //var newArgs = args.ToList();
+        
+        
         // ------ add arguments from value nodes 
-        foreach (var nodeConfigValue in ValuesNodes)
-        {
-            currentArgs.Add(nodeConfigValue.Value);
-        }
+        // foreach (var nodeConfigValue in ValuesNodes)
+        // {
+        //     currentArgs.Add(nodeConfigValue.Value);
+        // }
         
         // ------ add arguments from previous nodes 
-        var newArgs = args.ToList();
+        var newArgs = args.Values.ToList();
         foreach (var newArg in newArgs)
         {
             currentArgs.Add(newArg);
         }
-
-
-        // foreach (var o in newArgs)
-        // {
-        //     Debug.Log(NodeConfig.LuaScript + " YYY "+o.ToString());
-        // }
-        //
-        // foreach (var o in args)
-        // {
-        //     Debug.Log(NodeConfig.LuaScript + " TTT "+o.ToString());
-        // }
-        //  Debug.Log(NodeConfig.LuaScript + "  >>> "+ args.Length);
         
-        DynValue res = script.Call(script.Globals["main"], currentArgs.ToArray());
+        DynValue res = script.Call(script.Globals["main"], currentArgs);
         Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
         yield return new WaitForSeconds(NodeWaitTime);
 
         AlreadyExecuted = true;
+
+        foreach (object o in currentArgs)
+        {
+            Debug.Log(JsonUtility.ToJson(o));
+        }
         
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
             if (outputNode.isBlocked) continue;
             Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
-            outputNode.Execute(res.Tuple);
+            outputNode.Execute(res.Table);
         }
         currentArgs.Clear();
     }
