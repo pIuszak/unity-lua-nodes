@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class NodeElement : MonoBehaviour, IDropHandler
 {
     public string Name = " ";
-    public DynValue Value;
+    public string Value;
     [SerializeField] private Text displayText;
     [SerializeField] private InputField inputField;
     public Node MyNode;
@@ -16,15 +16,15 @@ public class NodeElement : MonoBehaviour, IDropHandler
     [Tooltip("Input Field is for Node Value's")]
     public Text InputField;
 
-    public NodeElement(string name, DynValue value)
+    public NodeElement(string name, string value)
     {
         Name = name;
         Value = value;
     }
 
-    public void SetValue(DynValue value)
+    public void SetValue(string value)
     {
-        inputField.text = value.String;
+        inputField.text = value;
         Value = value;
     }
 

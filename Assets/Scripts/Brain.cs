@@ -47,6 +47,12 @@ public class Brain : MonoBehaviour
         TextMesh.text = var;
     }
 
+    public float[] Detect(string xd)
+    {
+        return new float[2] {4.2f, 0.0f};
+    }
+    
+
     [UsedImplicitly]
     public void Move(Vector3 destination)
     {
@@ -107,9 +113,6 @@ public class Brain : MonoBehaviour
       //  DebugLog(this.gameObject.name + " Died");
         gameObject.SetActive(false);
     }
-    
-
- 
     
     [UsedImplicitly]
     public void Sleep(string seconds)

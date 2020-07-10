@@ -17,7 +17,7 @@ public class NodeConfig
 {
     public Vector3 Position = Vector3.zero;
     public List<Vector3> EnvoyPositions;
-    public List<DynValue> Values;
+    public List<string> Values = new List<string>();
     public string LuaScript = "Test.lua";
 }
 
@@ -49,6 +49,7 @@ public class Node : DragDrop
 
     public int argCounter = 0;
     public List<DynValue> currentArgs = new List<DynValue>();
+
     public void SaveValues()
     {
         foreach (NodeElement valuesNode in ValuesNodes)
@@ -91,7 +92,7 @@ public class Node : DragDrop
     //     }
     // }
 
-    public void SetNewValues(DynValue[] val)
+    public void SetNewValues(string[] val)
     {
         for (int i = 0; i < ValuesNodes.Count; i++)
         {
@@ -134,12 +135,12 @@ public class Node : DragDrop
 
         StartCoroutine(ExecuteC(args));
     }
-    
+
 
     public IEnumerator ExecuteC(Table args)
     {
         yield return new WaitForSeconds(1f);
-       // Debug.Log("ExecuteC " + this.gameObject.name);
+        // Debug.Log("ExecuteC " + this.gameObject.name);
 
         // import lua scriptbra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
@@ -164,32 +165,44 @@ public class Node : DragDrop
         }
 
         //var newArgs = args.ToList();
-        
-        
-        // ------ add arguments from value nodes 
-        // foreach (var nodeConfigValue in ValuesNodes)
-        // {
-        //     currentArgs.Add(nodeConfigValue.Value);
-        // }
-        
-        // ------ add arguments from previous nodes 
-        var newArgs = args.Values.ToList();
-        foreach (var newArg in newArgs)
+
+
+        // // ------ add arguments from value nodes 
+        foreach (var nodeConfigValue in ValuesNodes)
         {
-            currentArgs.Add(newArg);
+            Debug.Log("value node take me home _>>>>>>>> " + nodeConfigValue.Value);
+            // TODO BUG HERE 
+            currentArgs.Add(DynValue.NewString(nodeConfigValue.Value));
         }
-        
+
+        // ------ add arguments from previous nodes 
+        // var x1 =  args;
+        // var x2 =  args.Values;
+        // var x3 =  args.Values.ToList();
+        if (args != null)
+        {
+            if (args.Values != null)
+            {
+                var newArgs = args.Values.ToList();
+                foreach (var newArg in newArgs)
+                {
+                    currentArgs.Add(newArg);
+                }
+            }
+        }
+
         DynValue res = script.Call(script.Globals["main"], currentArgs);
         Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
         yield return new WaitForSeconds(NodeWaitTime);
 
         AlreadyExecuted = true;
 
-        foreach (object o in currentArgs)
+        foreach (var o in currentArgs)
         {
-            Debug.Log(JsonUtility.ToJson(o));
+            Debug.Log( " ++++++++ " + o.String);
         }
-        
+
+        Debug.Log("@@@@@ "+res.String);
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
@@ -197,11 +210,12 @@ public class Node : DragDrop
             Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
             outputNode.Execute(res.Table);
         }
+
         currentArgs.Clear();
     }
 
     public void BlockNode(int val)
-    { 
+    {
         Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
         OutputNodes[val].isBlocked = true;
     }

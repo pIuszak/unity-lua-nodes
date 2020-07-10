@@ -22,6 +22,6 @@ end
 
 -- function main() is called every state chage
 function main(args)
-    Brain.Sleep(args)
-    Node.NodeSetWaitTime(args)
+    Brain.Sleep(args[1])
+    --Node.NodeSetWaitTime(args[1])
 end

@@ -12,6 +12,6 @@ function config()
 end
 
 -- function main() is called every state chage
-function main(args, slider)
+function main(args)
     return {}
 end

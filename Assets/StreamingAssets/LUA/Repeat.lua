@@ -11,7 +11,7 @@ function config()
 end
 
 -- function main() is called every state chage
-function main()
+function main(args)
     Node.Repeat()
     --Brain.MoveTo(args, -args)
 

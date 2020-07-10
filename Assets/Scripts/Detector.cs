@@ -8,9 +8,19 @@ public class Detector : MonoBehaviour
 {
     public List<GameObject> CurrentlyDetected = new List<GameObject>();
 
-    public bool Detect(string val)
+    public float[] Detect(string val)
     {
-        return CurrentlyDetected.Select(x => x.tag = val).Any();
+        Debug.Log("--- Detect");
+        var o =  CurrentlyDetected.FirstOrDefault(x => x.CompareTag(val));
+        if (o != null)
+        {
+            var localPosition = o.transform.localPosition;
+            return o != null ? new float[2] {localPosition.x, localPosition.z} : null;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     [Button]

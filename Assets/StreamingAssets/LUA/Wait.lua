@@ -16,5 +16,5 @@ end
 
 -- function main() is called every state chage
 function main(args)
-    Node.NodeSetWaitTime(args)
+    Node.NodeSetWaitTime(args[1])
 end

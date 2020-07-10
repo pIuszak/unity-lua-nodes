@@ -21,11 +21,13 @@ local function isempty(s)
 end
 -- 
 function main(args)
-    
-    if Brain.Detect(args) then
+
+    if true then
         Node.BlockNode(1)
+        return { 14, 10 }
     else
         Node.BlockNode(0)
+        return { 10, 14 }
     end
 end
 
