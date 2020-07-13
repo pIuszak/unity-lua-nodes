@@ -49,7 +49,8 @@ public class Brain : MonoBehaviour
 
     public float[] Detect(string xd)
     {
-        return new float[2] {4.2f, 0.0f};
+        //return new float[2] {99.0f, 55.0f};
+        return Detector.Detect(xd);
     }
     
 

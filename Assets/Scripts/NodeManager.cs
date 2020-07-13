@@ -24,6 +24,7 @@ public class NodeManager : MonoBehaviour
     private Vector3 currentScriptPosition;
     public Node StartNode;
     public static NodeManager Instance;
+
     private void Awake()
     {
         Instance = this;
@@ -33,7 +34,7 @@ public class NodeManager : MonoBehaviour
     {
         InitializeDockButtons();
     }
-    
+
     // this method invokes 
     public void Play()
     {
@@ -42,6 +43,7 @@ public class NodeManager : MonoBehaviour
         {
             node.ClearAction();
         }
+
         StartNode.Execute(new Table(new Script()));
         // run ne
     }
