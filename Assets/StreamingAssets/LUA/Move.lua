@@ -9,9 +9,18 @@ function config()
     local outNode = {"Action"}
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
-
+local function isempty(s)
+    return s == nil or s == ''
+end
 -- function main() is called every state chage
 function main(args)
+    if isempty(args[1]) then
+        return nil
+    end
+    if isempty(args[2]) then
+        return nil
+    end
+    
     Brain.MoveTo(args[1],args[2])
 end
 

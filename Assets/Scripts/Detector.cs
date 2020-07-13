@@ -10,17 +10,27 @@ public class Detector : MonoBehaviour
 
     public float[] Detect(string val)
     {
-        Debug.Log("--- Detect");
+        
         var o =  CurrentlyDetected.FirstOrDefault(x => x.CompareTag(val));
         if (o != null)
         {
             var localPosition = o.transform.localPosition;
+            Debug.Log("--- Detected "+ val + "  at " + localPosition.x +"  "+  localPosition.z);
+            return new float[2] {localPosition.x, localPosition.z};
             return o != null ? new float[2] {localPosition.x, localPosition.z} : null;
         }
         else
         {
+            Debug.Log("Nothing Detected");
             return null;
+           //return new float[2] {49f, 51f};
         }
+    }
+    
+    public GameObject DetectGameObject(string val)
+    {
+        var o =  CurrentlyDetected.FirstOrDefault(x => x.CompareTag(val));
+        return o != null ? o : null;
     }
     
     [Button]

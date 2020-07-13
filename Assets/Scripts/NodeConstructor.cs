@@ -43,7 +43,7 @@ public class NodeConstructor : MonoBehaviour
         for (int i = 0; i < inNodeSlotsNames.Length; i++)
         {
             var inElement = Instantiate(InPrefab, InRoot);
-            inElement.transform.GetComponentInChildren<NodeElement>().Init(inNodeSlotsNames[i], MyNode);
+            inElement.transform.GetComponentInChildren<NodeElement>().InitIn(inNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Values ----------
@@ -57,7 +57,7 @@ public class NodeConstructor : MonoBehaviour
         for (int i = 0; i < outNodeSlotsNames.Length; i++)
         {
             var outElement = Instantiate(OutPrefab, OutRoot);
-            outElement.transform.GetComponentInChildren<NodeElement>().Init(outNodeSlotsNames[i], MyNode);
+            outElement.transform.GetComponentInChildren<NodeElement>().InitOut(outNodeSlotsNames[i], MyNode);
 
             // ---------- Envoy & Line ----------
             env[i] = Instantiate(Envoy, transform);

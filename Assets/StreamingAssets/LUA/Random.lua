@@ -8,7 +8,6 @@ function config()
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
 
-
 function main(args)
-    return { tonumber(args[1]), tonumber(args[2]) }
+    return { math.random(tonumber(args[1]), tonumber(args[2])), math.random(tonumber(args[1]), tonumber(args[2])) }
 end

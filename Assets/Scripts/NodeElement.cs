@@ -42,12 +42,18 @@ public class NodeElement : MonoBehaviour, IDropHandler
         node.AddValueNodeElement(this);
     }
 
-    public void Init(string n, Node node)
+    public void InitOut(string n, Node node)
     {
         displayText.text = Name = n;
         MyNode = node;
+        node.AddOutNodeElement(this);
     }
-
+    public void InitIn(string n, Node node)
+    {
+        displayText.text = Name = n;
+        MyNode = node;
+       // node.AddOutNodeElement(this);
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<NodeEnvoy>())

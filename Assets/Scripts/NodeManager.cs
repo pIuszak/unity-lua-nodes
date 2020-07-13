@@ -25,6 +25,8 @@ public class NodeManager : MonoBehaviour
     public Node StartNode;
     public static NodeManager Instance;
 
+    public static readonly int MaxOutNodes = 2;
+
     private void Awake()
     {
         Instance = this;

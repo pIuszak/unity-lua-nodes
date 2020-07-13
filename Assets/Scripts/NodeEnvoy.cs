@@ -5,9 +5,7 @@ using UnityEngine.EventSystems;
 public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     public NodeElement MyNodeElement;
-
-
-
+    
     public NodeElement GetData()
     {
         return MyNodeElement;
@@ -17,7 +15,7 @@ public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndD
     {
         if(other.GetComponent<NodeElement>())
         {
-            MyNodeElement.MyNode.ConnectToOtherOutputNodes(other.GetComponent<NodeElement>().MyNode); 
+            MyNodeElement.MyNode.ConnectToOtherOutputNodes(other.GetComponent<NodeElement>().MyNode, this); 
             other.GetComponent<NodeElement>().MyNode.ConnectToOtherInputNodes(MyNodeElement.MyNode);
         }
     }

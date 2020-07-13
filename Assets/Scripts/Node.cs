@@ -27,10 +27,10 @@ public class NodeConfig
 public class Node : DragDrop
 {
     [SerializeField] public Brain Brain;
-    [SerializeField] protected NodeElement[] InNodeSlots;
-    [SerializeField] protected NodeElement[] OutNodeSlots;
-    [SerializeField] protected List<NodeElement> ValuesNodes = new List<NodeElement>();
-    [SerializeField] protected List<Node> OutputNodes = new List<Node>();
+    [SerializeField] protected List<NodeElement> InNodeSlots = new List<NodeElement>();
+    [SerializeField] protected NodeElement[] OutNodeElement = new NodeElement[NodeManager.MaxOutNodes];
+    [SerializeField] protected List<NodeElement> ValuesNodes = new List<NodeElement>(NodeManager.MaxOutNodes);
+    protected Node[] OutputNodes = new Node[NodeManager.MaxOutNodes];
     [SerializeField] protected List<Node> InputNodes = new List<Node>();
 
     public bool isBlocked;
@@ -68,9 +68,24 @@ public class Node : DragDrop
         ValuesNodes.Add(nodeElement);
     }
 
-    public void ConnectToOtherOutputNodes(Node node)
+    // new 
+    public void AddOutNodeElement(NodeElement nodeElement)
     {
-        OutputNodes.Add(node);
+        var x = OutNodeElement.ToList();
+        x.Add(nodeElement);
+        OutNodeElement = x.ToArray();
+    }
+
+    public void ConnectToOtherOutputNodes(Node node, NodeEnvoy nodeEnvoy)
+    {
+        var x = OutNodeElement.ToList();
+        var index = x.ToList().FindIndex(c => c == nodeEnvoy.MyNodeElement);
+
+        OutputNodes[index] = node;
+    }
+
+    public void SortOutputNode()
+    {
     }
 
     public void ConnectToOtherInputNodes(Node node)
@@ -140,7 +155,7 @@ public class Node : DragDrop
     public IEnumerator ExecuteC(Table args)
     {
         yield return new WaitForSeconds(1f);
-        // Debug.Log("ExecuteC " + this.gameObject.name);
+         //Debug.Log("ExecuteC " + this.gameObject.name);
 
         // import lua scriptbra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
@@ -170,7 +185,7 @@ public class Node : DragDrop
         // // ------ add arguments from value nodes 
         foreach (var nodeConfigValue in ValuesNodes)
         {
-            Debug.Log("value node take me home _>>>>>>>> " + nodeConfigValue.Value);
+            //     Debug.Log("value node take me home _>>>>>>>> " + nodeConfigValue.Value);
             // TODO BUG HERE 
             currentArgs.Add(DynValue.NewString(nodeConfigValue.Value));
         }
@@ -191,24 +206,28 @@ public class Node : DragDrop
             }
         }
 
-        DynValue res = script.Call(script.Globals["main"], currentArgs);
-        Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
+
+        //Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
+        var res = script.Call(script.Globals["main"], currentArgs);
+
         yield return new WaitForSeconds(NodeWaitTime);
 
         AlreadyExecuted = true;
 
-        foreach (var o in currentArgs)
-        {
-            Debug.Log( " ++++++++ " + o.String);
-        }
-
-        Debug.Log("@@@@@ "+res.String);
+        // foreach (var o in currentArgs)
+        // {
+        //     Debug.Log( " ++++++++ " + o.String);
+        // }
+        
+    //    Debug.Log("@@@@@ "+res.String);
         // execute next nodes 
         foreach (var outputNode in OutputNodes)
         {
+            if (!outputNode) continue;
+        
             if (outputNode.isBlocked) continue;
-            Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
-            outputNode.Execute(res.Table);
+                Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
+                outputNode.Execute(res.Table);
         }
 
         currentArgs.Clear();
@@ -216,7 +235,7 @@ public class Node : DragDrop
 
     public void BlockNode(int val)
     {
-        Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
+        // Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
         OutputNodes[val].isBlocked = true;
     }
 
@@ -230,6 +249,13 @@ public class Node : DragDrop
 
     public void ClearAction()
     {
+        foreach (var node in OutputNodes)
+        {
+            if(node) node.isBlocked = false;
+         
+           
+        }
+
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }

@@ -19,9 +19,15 @@ function config()
     local outNode = {"Action"}
     NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
 end
-
+local function isempty(s)
+    return s == nil or s == ''
+end
 -- function main() is called every state chage
 function main(args)
+    if isempty(args[1]) then
+        return nil
+    end
+    
     Brain.Sleep(args[1])
     --Node.NodeSetWaitTime(args[1])
 end
