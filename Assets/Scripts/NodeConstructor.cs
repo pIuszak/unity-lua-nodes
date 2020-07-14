@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
-using UnityEngine.UI;
+using UnityEngine.UI; 
 
 
 public class NodeConstructor : MonoBehaviour
@@ -32,41 +32,42 @@ public class NodeConstructor : MonoBehaviour
         StartCoroutine(CreateNodeC(nodeName, inNodeSlotsNames, valNodeSlotsNames, outNodeSlotsNames,envoyPos));
     }
 
-    public IEnumerator CreateNodeC(string nodeName, string[] inNodeSlotsNames, string[] valNodeSlotsNames,
+    private IEnumerator CreateNodeC(string nodeName, string[] inNodeSlotsNames, string[] valNodeSlotsNames,
         string[] outNodeSlotsNames, List<Vector3> envoyPos = null)
     {
         var env = new GameObject[MaxNodeLength];
         var envSrc = new GameObject[MaxNodeLength];
-
+        
         //  ---------- In ----------
         Name.text = nodeName;
-        for (int i = 0; i < inNodeSlotsNames.Length; i++)
+        for (var i = 0; i < inNodeSlotsNames.Length; i++)
         {
             var inElement = Instantiate(InPrefab, InRoot);
             inElement.transform.GetComponentInChildren<NodeElement>().InitIn(inNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Values ----------
-        for (int i = 0; i < valNodeSlotsNames.Length; i++)
+        for (var i = 0; i < valNodeSlotsNames.Length; i++)
         {
             var valElement = Instantiate(ValPrefab, ValRoot);
             valElement.transform.GetComponentInChildren<NodeElement>().InitVal(valNodeSlotsNames[i], MyNode);
         }
 
         //  ---------- Out ----------
-        for (int i = 0; i < outNodeSlotsNames.Length; i++)
+        for (var i = 0; i < outNodeSlotsNames.Length; i++)
         {
             var outElement = Instantiate(OutPrefab, OutRoot);
-            outElement.transform.GetComponentInChildren<NodeElement>().InitOut(outNodeSlotsNames[i], MyNode);
+            outElement.transform.GetComponentInChildren<NodeElement>().InitOut(i, outNodeSlotsNames[i], MyNode);
 
             // ---------- Envoy & Line ----------
             env[i] = Instantiate(Envoy, transform);
             env[i].GetComponent<NodeEnvoy>().MyNodeElement = outElement.GetComponentInChildren<NodeElement>();
             GetComponent<Node>().NodeEnvoys.Add(env[i].GetComponent<NodeEnvoy>());
-      
-            ConstraintSource constraintSource = new ConstraintSource();
-            constraintSource.sourceTransform = outElement.transform;
-            constraintSource.weight = 1;
+
+            var constraintSource = new ConstraintSource
+            {
+                sourceTransform = outElement.transform, weight = 1
+            };
             envSrc[i] = Instantiate(EnvoySrc, transform);
 
             envSrc[i].GetComponent<PositionConstraint>().SetSource(0, constraintSource);

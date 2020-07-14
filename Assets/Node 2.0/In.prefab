@@ -139,10 +139,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
-  displayText: {fileID: 3784798227244369882}
-  inputField: {fileID: 0}
-  MyNode: {fileID: 0}
-  InputField: {fileID: 0}
+  Index: 0
+  DisplayText: {fileID: 3784798227244369882}
+  Input: {fileID: 0}
 --- !u!61 &901132411043938911
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -1,46 +1,29 @@
 ﻿using System.Collections;
 using JetBrains.Annotations;
 using MoonSharp.Interpreter;
-using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
-using Random = UnityEngine.Random;
 
 [MoonSharpUserData]
 public class Brain : MonoBehaviour
 {
-    [Range(0, 100)] [SerializeField] private float health = 100;
+    [field: Range(0, 100)]
+    public float Health { get; protected set; } = 100;
 
-    public float Health
-    {
-        get => health;
-        protected set => health = value;
-    }
+    [field: Range(0, 100)]
+    public float Stamina { get; protected set; } = 90;
 
-    [Range(0, 100)] [SerializeField] private float stamina = 90;
-
-    public float Stamina
-    {
-        get => stamina;
-        protected set => stamina = value;
-    }
-
-    [Range(0, 100)] [SerializeField] private float hunger = 80;
-
-    public float Hunger
-    {
-        get => hunger;
-        protected set => hunger = value;
-    }
+    [field: Range(0, 100)]
+    public float Hunger { get; protected set; } = 80;
 
     [SerializeField] private NavMeshAgent Agent;
     [SerializeField] private TextMeshPro TextMesh;
     [SerializeField] private Detector Sight;
     [SerializeField] private Detector Melee;
     public GameObject Target;
-    [SerializeField] private Animator animator;
-
+    [SerializeField] private Animator Animator;
+    [SerializeField] private NodeContainer NodeContainer;
     private void Debug(string var)
     {
         UnityEngine.Debug.Log(var);
@@ -49,19 +32,16 @@ public class Brain : MonoBehaviour
 
     public float[] Detect(string xd)
     {
-        //return new float[2] {99.0f, 55.0f};
         return Sight.Detect(xd);
     }
-
-
+    
     [UsedImplicitly]
     public void Move(Vector3 destination)
     {
         Debug("Move " + destination);
         Agent.SetDestination(destination);
     }
-
-
+    
     [UsedImplicitly]
     public void MoveTo(float x, float z)
     {
@@ -136,7 +116,7 @@ public class Brain : MonoBehaviour
     {
         var seconds = float.Parse(val);
         //   UnityEngine.Debug.Log("Sleep C" + seconds);
-        animator.CrossFade("Sleep", 0.3f);
+        Animator.CrossFade("Sleep", 0.3f);
         while (seconds > 0)
         {
             Debug("zzzZZZzzz " + --seconds);
@@ -144,7 +124,12 @@ public class Brain : MonoBehaviour
         }
 
         // UnityEngine.Debug.Log("Sleep C END" + seconds);
-        animator.CrossFade("Idle", 0.3f);
+        Animator.CrossFade("Idle", 0.3f);
         Debug(" ");
+    }
+
+    public void Repeat()
+    {
+        NodeContainer.Play();
     }
 }

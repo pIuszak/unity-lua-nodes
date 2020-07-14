@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
@@ -11,13 +10,11 @@ public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndD
         return MyNodeElement;
     }
 
-    private void OnTriggerEnter2D(Collider2D other) 
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.GetComponent<NodeElement>())
-        {
-            MyNodeElement.MyNode.ConnectToOtherOutputNodes(other.GetComponent<NodeElement>().MyNode, this); 
-            other.GetComponent<NodeElement>().MyNode.ConnectToOtherInputNodes(MyNodeElement.MyNode);
-        }
+        if (!other.GetComponent<NodeElement>()) return;
+        MyNodeElement.MyNode.ConnectToOtherOutputNodes(MyNodeElement.Index, other.GetComponent<NodeElement>().MyNode); 
+        other.GetComponent<NodeElement>().MyNode.ConnectToOtherInputNodes(MyNodeElement.MyNode);
     }
     
     public new void OnBeginDrag(PointerEventData eventData) {

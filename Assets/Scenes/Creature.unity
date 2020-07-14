@@ -558,6 +558,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NodeManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7634616702874440865, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7634616702874440871, guid: b8fa5c8a7ac1e974cb7fb5942d9cf6df,
         type: 3}
       propertyPath: m_LocalPosition.x

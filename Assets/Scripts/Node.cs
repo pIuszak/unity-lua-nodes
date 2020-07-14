@@ -6,33 +6,17 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
 
-/*
- * 1 get data from prevous node
- * 2 load lua script and compute or execute Unity API
- * 3 pass data to next node
- */
-
-[Serializable]
-public class NodeConfig
-{
-    public Vector3 Position = Vector3.zero;
-    public List<Vector3> EnvoyPositions;
-    public List<string> Values = new List<string>();
-    public string LuaScript = "Test.lua";
-}
-
 [MoonSharpUserData]
 [ExecuteInEditMode]
 [Serializable]
 public class Node : DragDrop
 {
     [SerializeField] public Brain Brain;
-    [SerializeField] protected List<NodeElement> InNodeSlots = new List<NodeElement>();
-    [SerializeField] protected NodeElement[] OutNodeElement = new NodeElement[NodeManager.MaxOutNodes];
-    [SerializeField] protected List<NodeElement> ValuesNodes = new List<NodeElement>(NodeManager.MaxOutNodes);
-    protected Node[] OutputNodes = new Node[NodeManager.MaxOutNodes];
-    [SerializeField] protected List<Node> InputNodes = new List<Node>();
-
+    protected List<NodeElement>  OutNodeElement =  new List<NodeElement>();
+     protected List<NodeElement> ValuesNodes = new List<NodeElement>();
+     protected List<Node> OutputNodes = new List<Node>();
+     protected List<Node> InputNodes = new List<Node>();
+        
     public bool isBlocked;
 
     public NodeConfig NodeConfig;
@@ -47,22 +31,21 @@ public class Node : DragDrop
 
     public float NodeWaitTime = 1f;
 
-    public int argCounter = 0;
-    public List<DynValue> currentArgs = new List<DynValue>();
+    public int LocalIndex;
+    public List<DynValue> CurrentArgs = new List<DynValue>();
+
+    private void Awake()
+    {
+        Brain = GetComponentInParent<Brain>();
+    }
 
     public void SaveValues()
     {
-        foreach (NodeElement valuesNode in ValuesNodes)
+        foreach (var valuesNode in ValuesNodes)
         {
             NodeConfig.Values.Add(valuesNode.Value);
         }
     }
-
-    public void Repeat()
-    {
-        NodeManager.Instance.Play();
-    }
-
     public void AddValueNodeElement(NodeElement nodeElement)
     {
         ValuesNodes.Add(nodeElement);
@@ -71,42 +54,24 @@ public class Node : DragDrop
     // new 
     public void AddOutNodeElement(NodeElement nodeElement)
     {
-        var x = OutNodeElement.ToList();
-        x.Add(nodeElement);
-        OutNodeElement = x.ToArray();
+        OutNodeElement.Add(nodeElement);
+        OutNodeElement = OutNodeElement.OrderBy(o => o.Index).ToList();
     }
-
-    public void ConnectToOtherOutputNodes(Node node, NodeEnvoy nodeEnvoy)
+    
+    // Add and sort to match NodeElement 
+    public void ConnectToOtherOutputNodes(int index, Node node)
     {
-        var x = OutNodeElement.ToList();
-        var index = x.ToList().FindIndex(c => c == nodeEnvoy.MyNodeElement);
-
-        OutputNodes[index] = node;
+        node.LocalIndex = index;
+        OutputNodes.Add(node);
+        OutputNodes = OutputNodes.OrderBy(o => o.LocalIndex).ToList();
     }
-
-    public void SortOutputNode()
-    {
-    }
-
+    
+    
     public void ConnectToOtherInputNodes(Node node)
     {
         InputNodes.Add(node);
     }
-
-    // protected void GetData(NodeElement[] data)
-    // {
-    //     InNodeSlots = data;
-    //     Execute(args);
-    // }
-    //
-    // protected void PassData()
-    // {
-    //     foreach (var outputNode in OutputNodes)
-    //     {
-    //         GetData(OutNodeSlots);
-    //     }
-    // }
-
+    
     public void SetNewValues(string[] val)
     {
         for (int i = 0; i < ValuesNodes.Count; i++)
@@ -135,7 +100,6 @@ public class Node : DragDrop
     public void Execute(Table args)
     {
         if (AlreadyExecuted && InputNodes.Count != 1) return;
-        // todo 
         // check if every input node is fulfilled
         if (!AlreadyChecked && InputNodes.Count != 1)
         {
@@ -155,107 +119,74 @@ public class Node : DragDrop
     public IEnumerator ExecuteC(Table args)
     {
         yield return new WaitForSeconds(1f);
-         //Debug.Log("ExecuteC " + this.gameObject.name);
 
-        // import lua scriptbra
+        // import lua script bra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
         var script = new Script();
-
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-
-        // TODO
-        script.Globals["Brain"] = FindObjectOfType<Brain>();
+        
+        // add lua scripts access to Voxelland API 
+        script.Globals["Brain"] = Brain;
         script.Globals["Node"] = this;
         script.DoString(LuaCode);
-
-        if (ValuesNodes.Count > 0)
-        {
-            foreach (var nodeConfigValue in ValuesNodes)
-            {
-                // newArgs.Add(nodeConfigValue);
-            }
-        }
-
-        //var newArgs = args.ToList();
-
-
-        // // ------ add arguments from value nodes 
+        
+        // add arguments from value nodes 
         foreach (var nodeConfigValue in ValuesNodes)
         {
-            //     Debug.Log("value node take me home _>>>>>>>> " + nodeConfigValue.Value);
-            // TODO BUG HERE 
-            currentArgs.Add(DynValue.NewString(nodeConfigValue.Value));
+            CurrentArgs.Add(DynValue.NewString(nodeConfigValue.Value));
         }
-
-        // ------ add arguments from previous nodes 
-        // var x1 =  args;
-        // var x2 =  args.Values;
-        // var x3 =  args.Values.ToList();
-        if (args != null)
+        
+        // add arguments from previous nodes 
+        if (args?.Values != null)
         {
-            if (args.Values != null)
+            var newArgs = args.Values.ToList();
+            foreach (var newArg in newArgs)
             {
-                var newArgs = args.Values.ToList();
-                foreach (var newArg in newArgs)
-                {
-                    currentArgs.Add(newArg);
-                }
+                CurrentArgs.Add(newArg);
             }
         }
-
-
-        //Debug.Log(NodeConfig.LuaScript + " >>> args >>>" + currentArgs.Count);
-        var res = script.Call(script.Globals["main"], currentArgs);
-
+        
+        // call lua script
+        var res = script.Call(script.Globals["main"], CurrentArgs);
+        
+        // wait 
         yield return new WaitForSeconds(NodeWaitTime);
-
         AlreadyExecuted = true;
 
-        // foreach (var o in currentArgs)
-        // {
-        //     Debug.Log( " ++++++++ " + o.String);
-        // }
-        
-    //    Debug.Log("@@@@@ "+res.String);
-        // execute next nodes 
-        foreach (var outputNode in OutputNodes)
+        if (OutputNodes.Count <= decimal.Zero)
         {
-            if (!outputNode) continue;
-        
-            if (outputNode.isBlocked) continue;
-                Debug.Log(NodeConfig.LuaScript + ">>> runs >>> " + outputNode.NodeConfig.LuaScript + " >>> val >>>" + currentArgs.Count);
-                outputNode.Execute(res.Table);
+            Brain.Repeat();
         }
-
-        currentArgs.Clear();
+        
+        // move to next node/nodes
+        foreach (var outputNode in OutputNodes.Where(outputNode => !outputNode.isBlocked))
+        {
+            outputNode.Execute(res.Table);
+        }
+        
+        CurrentArgs.Clear();
     }
 
     public void BlockNode(int val)
     {
-        // Debug.Log("++++++++++++++++++++++++++++++++++++++++++++Block Node");
-        OutputNodes[val].isBlocked = true;
+        if (OutputNodes[val]) OutputNodes[val].isBlocked = true;
     }
 
     public int NodeSetWaitTime(float val)
     {
-        // Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NodeSetWaitTime "+ val);
         NodeWaitTime = val;
         return 0;
     }
-
-
+    
     public void ClearAction()
     {
-        foreach (var node in OutputNodes)
+        foreach (var node in OutputNodes.Where(node => node))
         {
-            if(node) node.isBlocked = false;
-         
-           
+            node.isBlocked = false;
         }
-
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }
@@ -265,15 +196,13 @@ public class Node : DragDrop
         StartCoroutine(ClearActionC());
     }
 
-    IEnumerator ClearActionC()
+    private IEnumerator ClearActionC()
     {
         yield return new WaitForSeconds(1f);
-
-        foreach (Node node in OutputNodes)
+        foreach (var node in OutputNodes)
         {
             node.ClearAction();
         }
-
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }

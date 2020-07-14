@@ -1,34 +1,38 @@
 ﻿using System;
-using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[System.Serializable]
+[Serializable]
 public class NodeElement : MonoBehaviour, IDropHandler
 {
-    public string Name = " ";
+    public string Name;
     public string Value;
-    [SerializeField] private Text displayText;
-    [SerializeField] private InputField inputField;
-    public Node MyNode;
+    public int Index;
+    [SerializeField] private Text DisplayText;
+    [SerializeField] private InputField Input;
 
-    [Tooltip("Input Field is for Node Value's")]
-    public Text InputField;
+    private Node myNode;
 
-    public NodeElement(string name, string value)
+    public Node MyNode
     {
+        get => myNode;
+        set => myNode = value;
+    }
+    
+    public NodeElement(int index, string name, string value)
+    {
+        Index = index;
         Name = name;
         Value = value;
     }
 
     public void SetValue(string value)
     {
-        inputField.text = value;
+        Input.text = value;
         Value = value;
     }
-
-
+    
     public void SetNodeSlot(NodeElement ns)
     {
         Name = ns.Name;
@@ -37,28 +41,29 @@ public class NodeElement : MonoBehaviour, IDropHandler
 
     public void InitVal(string n, Node node)
     {
-        displayText.text = Name = n;
-        MyNode = node;
+        DisplayText.text = Name = n;
+        myNode = node;
         node.AddValueNodeElement(this);
     }
 
-    public void InitOut(string n, Node node)
+    public void InitOut(int index, string n, Node node)
     {
-        displayText.text = Name = n;
-        MyNode = node;
+        DisplayText.text = Name = n;
+        Index = index;
+        myNode = node;
         node.AddOutNodeElement(this);
     }
+
     public void InitIn(string n, Node node)
     {
-        displayText.text = Name = n;
-        MyNode = node;
-       // node.AddOutNodeElement(this);
+        DisplayText.text = Name = n;
+        myNode = node;
     }
-    void OnTriggerEnter2D(Collider2D other)
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<NodeEnvoy>())
         {
-            //  Debug.Log ("Triggered " + other.name);
             ForceDrop(other.GetComponent<NodeEnvoy>());
         }
     }
@@ -69,11 +74,10 @@ public class NodeElement : MonoBehaviour, IDropHandler
         SetNodeSlot(nodeEnvoy.GetData());
         nodeEnvoy.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
     }
-
-
-    // old ui collision system  
+    
     public void OnDrop(PointerEventData eventData)
     {
+        // old ui collision system  
         // if (eventData.pointerDrag != null)
         // {
         //     var envoy = eventData.pointerDrag.GetComponent<NodeEnvoy>();

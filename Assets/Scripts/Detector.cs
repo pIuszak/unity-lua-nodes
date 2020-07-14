@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NaughtyAttributes;
 using UnityEngine;
 
 public class Detector : MonoBehaviour
@@ -10,21 +8,10 @@ public class Detector : MonoBehaviour
 
     public float[] Detect(string val)
     {
-        
         var o =  CurrentlyDetected.FirstOrDefault(x => x.CompareTag(val));
-        if (o != null)
-        {
-            var localPosition = o.transform.localPosition;
-            Debug.Log("--- Detected "+ val + "  at " + localPosition.x +"  "+  localPosition.z);
-            return new float[2] {localPosition.x, localPosition.z};
-            return o != null ? new float[2] {localPosition.x, localPosition.z} : null;
-        }
-        else
-        {
-            Debug.Log("Nothing Detected");
-            return null;
-           //return new float[2] {49f, 51f};
-        }
+        if (o == null) return null;
+        var localPosition = o.transform.localPosition;
+        return new[] {localPosition.x, localPosition.z};
     }
     
     public GameObject DetectGameObject(string val)
@@ -33,31 +20,26 @@ public class Detector : MonoBehaviour
         return o != null ? o : null;
     }
     
-    [Button]
-    public void DetectTest()
-    {
-        Debug.Log(Detect("Egg"));
-    }
-    
-    private void AddToList(GameObject c)
+    private void AddToCurrentlyDetected(GameObject c)
     {
         if (!CurrentlyDetected.Contains(c))
         {
             CurrentlyDetected.Add(c);
         }
     }
+    
+    // checks if entered Detectable area
     private void OnTriggerEnter(Collider other)
     {
         if (!other.GetComponent<Detectable>()) return;
-        AddToList(other.gameObject);
+        AddToCurrentlyDetected(other.gameObject);
     }
     
-
-    // checks if leaved area
+    // checks if leaved Detectable area
     private void OnTriggerExit(Collider other)
     {
         if (!other.GetComponent<Detectable>()) return;
-        CurrentlyDetected.Remove(other.gameObject);;
+        CurrentlyDetected.Remove(other.gameObject);
     }
 
 }

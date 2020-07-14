@@ -89,10 +89,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Value: 0
-  displayText: {fileID: 6796734004898612620}
-  inputField: {fileID: 0}
-  MyNode: {fileID: 0}
-  InputField: {fileID: 0}
+  Index: 0
+  DisplayText: {fileID: 6796734004898612620}
+  Input: {fileID: 0}
 --- !u!1 &2219808813568755413
 GameObject:
   m_ObjectHideFlags: 0

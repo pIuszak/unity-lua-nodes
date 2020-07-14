@@ -6,31 +6,19 @@ using JetBrains.Annotations;
 using MoonSharp.Interpreter;
 using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [MoonSharpUserData]
-public class NodeManager : MonoBehaviour
+public class NodeContainer : MonoBehaviour
 {
     public GameObject NodePrefab;
     public Transform DragDropRoot;
     public Transform DockRoot;
     public GameObject DockButtonPrefab;
-
-    [NaughtyAttributes.ResizableTextArea] [SerializeField]
-    protected string LuaCode;
-
     public List<Node> NodesMemory = new List<Node>();
     private string currentScriptName;
     private Vector3 currentScriptPosition;
     public Node StartNode;
-    public static NodeManager Instance;
-
-    public static readonly int MaxOutNodes = 2;
-
-    private void Awake()
-    {
-        Instance = this;
-    }
 
     private void Start()
     {
@@ -41,23 +29,21 @@ public class NodeManager : MonoBehaviour
     public void Play()
     {
         // run start 
-        foreach (Node node in NodesMemory)
+        foreach (var node in NodesMemory)
         {
             node.ClearAction();
         }
 
         StartNode.Execute(new Table(new Script()));
-        // run ne
     }
-
-    //
+    
     [UsedImplicitly]
     public void RestartScene()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void InitializeDockButtons()
+    private void InitializeDockButtons()
     {
         var info = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "LUA"));
         var fileInfo = info.GetFiles();
@@ -83,32 +69,25 @@ public class NodeManager : MonoBehaviour
         dockButton.MyIcon.SetNativeSize();
     }
 
-    public void CreateNode(string FileName)
+    private void CreateNode(string fileName)
     {
-        CreateNode(FileName, new List<string>());
+        CreateNode(fileName, new List<string>());
     }
-
-    // todo merge with CreateNodeFromConfig !!!!
+    
     [UsedImplicitly]
-    public void CreateNode(string FileName, List<string> values)
+    public void CreateNode(string fileName, List<string> values)
     {
-        currentScriptName = FileName;
-        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, FileName);
-        LuaCode = System.IO.File.ReadAllText(filePath);
-        Script script = new Script();
+        currentScriptName = fileName;
+        var filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = Path.Combine(filePath, fileName);
+        var luaCode = File.ReadAllText(filePath);
+        var script = new Script();
 
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-        //todo dynamic arguments passing to/from LUA script
-        //script.Globals["ApiMoveTo"] = (Func<float,float,int>) brain.ApiMoveTo;
         script.Globals["NodeManager"] = this;
-        // TODO: CHANGE TARGET TO ARRAY OF UNITS IN RANGE
-        // script.Globals["Target"] = Brain.Targ;
-        script.DoString(LuaCode);
-        // if there is a slider, pass his value 
-        // var slider = MySlider ? MySlider.value : 0f;
-        DynValue res = script.Call(script.Globals["config"]);
+        script.DoString(luaCode);
+        script.Call(script.Globals["config"]);
     }
 
     [UsedImplicitly]
@@ -124,9 +103,8 @@ public class NodeManager : MonoBehaviour
         var newName = currentScriptName.Replace(".lua", "_node");
 
         node.name = newName;
-        //todo refactor plz 
         node.GetComponent<Node>().NodeConfig.LuaScript = currentScriptName;
-        //   Debug.Log(nodeName+"------------------------------------");
+        
         if (nodeName == "Start")
         {
             StartNode = node.GetComponent<Node>();
@@ -143,10 +121,7 @@ public class NodeManager : MonoBehaviour
         node.GetComponent<NodeConstructor>()
             .CreateNode(nodeName, inNodeSlotsNames, valNodeSlotsNames, outNodeSlotsNames);
     }
-
-    public void LoadValuesFromJson()
-    {
-    }
+    
 
     [UsedImplicitly]
     public void SaveToJson()
@@ -174,48 +149,38 @@ public class NodeManager : MonoBehaviour
             var newNode = JsonUtility.FromJson<NodeConfig>(s);
             currentScriptPosition = newNode.Position;
             CreateNode(newNode.LuaScript, newNode.Values);
-            //  newNode
         }
+        
+        // delayed apply envoys and values  
+        StartCoroutine(ApplyNodeElements(lines));
 
-        StartCoroutine(Delayed(lines));
-        // // create nodes 
-        // foreach (var s in lines)
-        // {
-        //
-        //     currentScriptPosition = newNode.Position;
-        //     CreateNode(newNode.LuaScript);
-        //     //  newNode
-        // }
     }
 
     [Button]
+    [UsedImplicitly]
+    // snap all nodes to grid
     public void SmartSort()
     {
-        var startX = -610.7512f;
-        var startY = 284.0462f;
+        const float startY = 284.0462f;
         var memX = -610.7512f;
         var memY = 284.0462f;
-        var mem = 240f;
-
-
-        for (int i = 0; i < NodesMemory.Count; i++)
+        const float mem = 240f;
+        
+        for (var i = 0; i < NodesMemory.Count; i++)
         {
             NodesMemory[i].transform.localPosition =
                 new Vector3(memX, memY, 0);
             memY -= mem;
-            if ((i % 3) == 2)
-            {
-                memX += mem;
-                memY = startY;
-            }
+            if ((i % 3) != 2) continue;
+            memX += mem;
+            memY = startY;
         }
     }
 
-    IEnumerator Delayed(string[] lines)
+    private IEnumerator ApplyNodeElements(IReadOnlyList<string> lines)
     {
         yield return new WaitForSeconds(1f);
-        //  Debug.Log("Deleyed");
-        for (int i = 0; i < lines.Length; i++)
+        for (var i = 0; i < lines.Count; i++)
         {
             var newNode = JsonUtility.FromJson<NodeConfig>(lines[i]);
             NodesMemory[i].SetNewEnvoysPos(newNode.EnvoyPositions.ToArray());
