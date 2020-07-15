@@ -1,29 +1,36 @@
 ﻿using System.Collections;
 using JetBrains.Annotations;
 using MoonSharp.Interpreter;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
 [MoonSharpUserData]
-public class TestBrain : MonoBehaviour
+public class Creature : Brain
 {
-    [field: Range(0, 100)]
-    public float Health { get; protected set; } = 100;
+    [Header("Creature")]
+    [ProgressBar("Health", 300, EColor.Red)]
+    public int Health = 250;
 
-    [field: Range(0, 100)]
-    public float Stamina { get; protected set; } = 90;
+    [ProgressBar("Hunger", 100, EColor.Blue)]
+    public int Hunger = 25;
 
-    [field: Range(0, 100)]
-    public float Hunger { get; protected set; } = 80;
-
+    [ProgressBar("Stamina", 200, EColor.Green)]
+    public int Stamina = 150;
+    
+    [Header("Navigation")]
     [SerializeField] private NavMeshAgent Agent;
     [SerializeField] private TextMeshPro TextMesh;
+    
+    [Header("Detection")]
     [SerializeField] private Detector Sight;
     [SerializeField] private Detector Melee;
-    public GameObject Target;
+    
+    
+    private GameObject target;
     [SerializeField] private Animator Animator;
-    [SerializeField] private Brain Brain;
+    
     private void Debug(string var)
     {
         UnityEngine.Debug.Log(var);
@@ -67,30 +74,30 @@ public class TestBrain : MonoBehaviour
     [UsedImplicitly]
     public float GetDistanceFromTarget()
     {
-        return Target == null ? -1 : Vector3.Distance(Target.gameObject.transform.position, transform.position);
+        return target == null ? -1 : Vector3.Distance(target.gameObject.transform.position, transform.position);
     }
 
     [UsedImplicitly]
     public void TryEat()
     {
         UnityEngine.Debug.Log("TryEat");
-        Target = Melee.DetectGameObject("Egg");
-        if (Target != null)
+        target = Melee.DetectGameObject("Egg");
+        if (target != null)
         {
-            Debug("Eat " + Target.name);
-            Melee.CurrentlyDetected.Remove(Target.gameObject);
-            Sight.CurrentlyDetected.Remove(Target.gameObject);
-            Destroy(Target.gameObject);
-            Target = null;
+            Debug("Eat " + target.name);
+            Melee.CurrentlyDetected.Remove(target.gameObject);
+            Sight.CurrentlyDetected.Remove(target.gameObject);
+            Destroy(target.gameObject);
+            target = null;
         }
     }
 
     [UsedImplicitly]
     public void Attack()
     {
-        Debug("Attack " + Target.name);
-        Target.gameObject.SetActive(false);
-        Target = null;
+        Debug("Attack " + target.name);
+        target.gameObject.SetActive(false);
+        target = null;
         //Debug.Log("Attack");
     }
 
@@ -130,6 +137,6 @@ public class TestBrain : MonoBehaviour
 
     public void Repeat()
     {
-        Brain.Play();
+        Play();
     }
 }

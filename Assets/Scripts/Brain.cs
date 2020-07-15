@@ -11,16 +11,17 @@ using UnityEngine.SceneManagement;
 [MoonSharpUserData]
 public class Brain : MonoBehaviour
 {
-    public GameObject NodePrefab;
+    [Header("Brain")]
+    public GameObject NeuronPrefab;
     public Transform DragDropRoot;
     public Transform DockRoot;
     public GameObject DockButtonPrefab;
-    public List<Neuron> NodesMemory = new List<Neuron>();
+    public List<Neuron> Neurons = new List<Neuron>();
     private string currentScriptName;
     private Vector3 currentScriptPosition;
-    public Neuron StartNeuron;
-
-    private void Start()
+    private Neuron startNeuron;
+    
+    private void Start()    
     {
         InitializeDockButtons();
     }
@@ -29,12 +30,12 @@ public class Brain : MonoBehaviour
     public void Play()
     {
         // run start 
-        foreach (var node in NodesMemory)
+        foreach (var node in Neurons)
         {
             node.ClearAction();
         }
 
-        StartNeuron.Execute(new Table(new Script()));
+        startNeuron.Execute(new Table(new Script()));
     }
     
     [UsedImplicitly]
@@ -93,7 +94,7 @@ public class Brain : MonoBehaviour
     public void CreateNewNeuron(string nodeName, string[] inNodeSlotsNames, string[] valNodeSlotsNames,
         string[] outNodeSlotsNames)
     {
-        var node = Instantiate(NodePrefab, DragDropRoot);
+        var node = Instantiate(NeuronPrefab, DragDropRoot);
         node.transform.localPosition = currentScriptPosition;
 
 
@@ -101,14 +102,14 @@ public class Brain : MonoBehaviour
         var newName = currentScriptName.Replace(".lua", "_node");
 
         node.name = newName;
-        node.GetComponent<Neuron>().NeuronConfig.LuaScript = currentScriptName;
+        node.GetComponent<Neuron>().NeuronConfig.Behaviour = currentScriptName;
         
         if (nodeName == "Start")
         {
-            StartNeuron = node.GetComponent<Neuron>();
+            startNeuron = node.GetComponent<Neuron>();
         }
 
-        NodesMemory.Add(node.GetComponent<Neuron>());
+        Neurons.Add(node.GetComponent<Neuron>());
         var bgName = currentScriptName.Replace(".lua", "");
 
         var img = Resources.Load<Sprite>("Icons/" + bgName);
@@ -125,7 +126,7 @@ public class Brain : MonoBehaviour
     public void SaveToJson()
     {
         FileUtilities.ClearFile("save.txt");
-        foreach (var node in NodesMemory)
+        foreach (var node in Neurons)
         {
             node.SavePosition();
             node.SaveValues();
@@ -146,7 +147,7 @@ public class Brain : MonoBehaviour
         {
             var newNode = JsonUtility.FromJson<NeuronConfig>(s);
             currentScriptPosition = newNode.Position;
-            CreateNeuron(newNode.LuaScript, newNode.Values);
+            CreateNeuron(newNode.Behaviour, newNode.Values);
         }
         
         // delayed apply envoys and values  
@@ -164,9 +165,9 @@ public class Brain : MonoBehaviour
         var memY = 284.0462f;
         const float mem = 240f;
         
-        for (var i = 0; i < NodesMemory.Count; i++)
+        for (var i = 0; i < Neurons.Count; i++)
         {
-            NodesMemory[i].transform.localPosition =
+            Neurons[i].transform.localPosition =
                 new Vector3(memX, memY, 0);
             memY -= mem;
             if ((i % 3) != 2) continue;
@@ -181,8 +182,8 @@ public class Brain : MonoBehaviour
         for (var i = 0; i < lines.Count; i++)
         {
             var newNode = JsonUtility.FromJson<NeuronConfig>(lines[i]);
-            NodesMemory[i].SetNewEnvoysPos(newNode.EnvoyPositions.ToArray());
-            NodesMemory[i].SetNewValues(newNode.Values.ToArray());
+            Neurons[i].SetNewEnvoysPos(newNode.SynapsesPositions.ToArray());
+            Neurons[i].SetNewValues(newNode.Values.ToArray());
         }
     }
 }

@@ -15,7 +15,7 @@ public class NeuronConstructor : MonoBehaviour
     public GameObject EnvoySrc;
     public GameObject Line;
     public Neuron MyNeuron;
-    public TestBrain TestBrain;
+    public Creature Creature;
     
     [SerializeField] private Transform InRoot;
     [SerializeField] private Transform ValRoot;

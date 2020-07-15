@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public class Neuron : DragDrop
 {
     public bool IsNeuronBlocked;
-    [SerializeField] public TestBrain TestBrain;
+    [SerializeField] public Creature Creature;
     protected List<NeuronPart> NeuronPartsOut = new List<NeuronPart>();
     protected List<NeuronPart> NeuronValues = new List<NeuronPart>();
     protected List<Neuron> NeuronsOut = new List<Neuron>();
@@ -32,7 +32,7 @@ public class Neuron : DragDrop
 
     private void Awake()
     {
-        TestBrain = GetComponentInParent<TestBrain>();
+        Creature = GetComponentInParent<Creature>();
     }
 
     public void SaveValues()
@@ -90,7 +90,7 @@ public class Neuron : DragDrop
         NeuronConfig.Position = transform.localPosition;
         foreach (var envoy in Synapses)
         {
-            NeuronConfig.EnvoyPositions.Add(envoy.transform.localPosition);
+            NeuronConfig.SynapsesPositions.Add(envoy.transform.localPosition);
         }
     }
 
@@ -115,19 +115,19 @@ public class Neuron : DragDrop
 
     public IEnumerator ExecuteC(Table args)
     {
-        Debug.Log("ExecuteC" + NeuronConfig.LuaScript);
+        Debug.Log("ExecuteC" + NeuronConfig.Behaviour);
         yield return new WaitForSeconds(1f);
 
         // import lua script bra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, NeuronConfig.LuaScript);
+        filePath = System.IO.Path.Combine(filePath, NeuronConfig.Behaviour);
         LuaCode = System.IO.File.ReadAllText(filePath);
         var script = new Script();
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
 
         // add lua scripts access to Voxelland API 
-        script.Globals["Brain"] = TestBrain;
+        script.Globals["Brain"] = Creature;
         script.Globals["Neuron"] = this;
         script.DoString(LuaCode);
 
@@ -156,7 +156,7 @@ public class Neuron : DragDrop
 
         if (NeuronsOut.Count <= decimal.Zero)
         {
-            TestBrain.Repeat();
+            Creature.Repeat();
         }
 
         // move to next node/nodes
