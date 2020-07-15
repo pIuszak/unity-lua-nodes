@@ -6,6 +6,7 @@ TagManager:
   tags:
   - blueAgent
   - Egg
+  - Chicken
   layers:
   - Default
   - TransparentFX

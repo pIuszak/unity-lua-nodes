@@ -33,7 +33,7 @@ public class Creature : Brain
     
     private void Debug(string var)
     {
-        UnityEngine.Debug.Log(var);
+       // UnityEngine.Debug.Log(var);
         TextMesh.text = var;
     }
 

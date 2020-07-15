@@ -11,13 +11,14 @@ public class Shortcuts : MonoBehaviour
     }
 
 
-   [SerializeField] private Canvas canvas;
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown("h"))
         {
-            canvas.enabled = !canvas.isActiveAndEnabled;
+         
+            
         }
     }
 }

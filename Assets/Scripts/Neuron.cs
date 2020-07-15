@@ -23,11 +23,12 @@ public class Neuron : DragDrop
 
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
     protected string LuaCode;
+
     public bool AlreadyExecuted;
     public bool AlreadyChecked;
     public float WaitTime = 1f;
     public int LocalIndex;
-    
+
     public List<DynValue> CurrentArgs = new List<DynValue>();
 
     private void Awake()
@@ -115,7 +116,6 @@ public class Neuron : DragDrop
 
     public IEnumerator ExecuteC(Table args)
     {
-        Debug.Log("ExecuteC" + NeuronConfig.Behaviour);
         yield return new WaitForSeconds(1f);
 
         // import lua script bra
@@ -124,7 +124,7 @@ public class Neuron : DragDrop
         LuaCode = System.IO.File.ReadAllText(filePath);
         var script = new Script();
         // Automatically register all MoonSharpUserData types
-        UserData.RegisterAssembly();
+        // UserData.RegisterAssembly();
 
         // add lua scripts access to Voxelland API 
         script.Globals["Brain"] = Creature;
