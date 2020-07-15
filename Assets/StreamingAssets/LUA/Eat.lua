@@ -12,7 +12,7 @@ function config()
     local inNode = { "Action", "Target"}
     local valueNode = {}
     local outNode = {"Action"}
-    NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
+    Brain.CreateNewNeuron(nodeName, inNode, valueNode, outNode)
 end
 
 -- function main() is called every state chage

@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [Serializable]
-public class NodeElement : MonoBehaviour, IDropHandler
+public class NeuronPart : MonoBehaviour, IDropHandler
 {
     public string Name;
     public string Value;
@@ -12,15 +12,15 @@ public class NodeElement : MonoBehaviour, IDropHandler
     [SerializeField] private Text DisplayText;
     [SerializeField] private InputField Input;
 
-    private Node myNode;
+    private Neuron myNeuron;
 
-    public Node MyNode
+    public Neuron MyNeuron
     {
-        get => myNode;
-        set => myNode = value;
+        get => myNeuron;
+        set => myNeuron = value;
     }
     
-    public NodeElement(int index, string name, string value)
+    public NeuronPart(int index, string name, string value)
     {
         Index = index;
         Name = name;
@@ -33,46 +33,46 @@ public class NodeElement : MonoBehaviour, IDropHandler
         Value = value;
     }
     
-    public void SetNodeSlot(NodeElement ns)
+    public void SetNodeSlot(NeuronPart ns)
     {
         Name = ns.Name;
         Value = ns.Value;
     }
 
-    public void InitVal(string n, Node node)
+    public void InitVal(string n, Neuron neuron)
     {
         DisplayText.text = Name = n;
-        myNode = node;
-        node.AddValueNodeElement(this);
+        myNeuron = neuron;
+        neuron.AddNeuronValue(this);
     }
 
-    public void InitOut(int index, string n, Node node)
+    public void InitOut(int index, string n, Neuron neuron)
     {
         DisplayText.text = Name = n;
         Index = index;
-        myNode = node;
-        node.AddOutNodeElement(this);
+        myNeuron = neuron;
+        neuron.AddNeuronPartOut(this);
     }
 
-    public void InitIn(string n, Node node)
+    public void InitIn(string n, Neuron neuron)
     {
         DisplayText.text = Name = n;
-        myNode = node;
+        myNeuron = neuron;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.GetComponent<NodeEnvoy>())
+        if (other.GetComponent<Synapse>())
         {
-            ForceDrop(other.GetComponent<NodeEnvoy>());
+            ForceDrop(other.GetComponent<Synapse>());
         }
     }
 
-    public void ForceDrop(NodeEnvoy nodeEnvoy)
+    public void ForceDrop(Synapse synapse)
     {
-        nodeEnvoy.SetDest(gameObject);
-        SetNodeSlot(nodeEnvoy.GetData());
-        nodeEnvoy.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
+        synapse.SetDest(gameObject);
+        SetNodeSlot(synapse.GetData());
+        synapse.GetComponent<RectTransform>().position = GetComponent<RectTransform>().position;
     }
     
     public void OnDrop(PointerEventData eventData)

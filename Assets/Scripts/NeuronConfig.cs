@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class NodeConfig
+public class NeuronConfig
 {
     public Vector3 Position = Vector3.zero;
     public List<Vector3> EnvoyPositions;

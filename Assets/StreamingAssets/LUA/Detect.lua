@@ -13,7 +13,7 @@ function config()
     local inNode = { "Action" }
     local valueNode = { "Tag" }
     local outNode = { "true", "false" }
-    NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
+    Brain.CreateNewNeuron(nodeName, inNode, valueNode, outNode)
 end
 
 local function isempty(s)
@@ -23,10 +23,10 @@ end
 function main(args)
 
     if isempty(Brain.Detect(args[1])) then
-        Node.BlockNode(0)
+        Neuron.BlockNode(0)
         return nil
     else
-        Node.BlockNode(1)
+        Neuron.BlockNode(1)
         return Brain.Detect(args[1])
     end
 end

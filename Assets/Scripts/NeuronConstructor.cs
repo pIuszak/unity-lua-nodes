@@ -5,7 +5,7 @@ using UnityEngine.Animations;
 using UnityEngine.UI; 
 
 
-public class NodeConstructor : MonoBehaviour
+public class NeuronConstructor : MonoBehaviour
 {
     public GameObject InPrefab;
     public GameObject ValPrefab;
@@ -14,8 +14,8 @@ public class NodeConstructor : MonoBehaviour
     public GameObject Envoy;
     public GameObject EnvoySrc;
     public GameObject Line;
-    public Node MyNode;
-    public Brain Brain;
+    public Neuron MyNeuron;
+    public TestBrain TestBrain;
     
     [SerializeField] private Transform InRoot;
     [SerializeField] private Transform ValRoot;
@@ -43,26 +43,26 @@ public class NodeConstructor : MonoBehaviour
         for (var i = 0; i < inNodeSlotsNames.Length; i++)
         {
             var inElement = Instantiate(InPrefab, InRoot);
-            inElement.transform.GetComponentInChildren<NodeElement>().InitIn(inNodeSlotsNames[i], MyNode);
+            inElement.transform.GetComponentInChildren<NeuronPart>().InitIn(inNodeSlotsNames[i], MyNeuron);
         }
 
         //  ---------- Values ----------
         for (var i = 0; i < valNodeSlotsNames.Length; i++)
         {
             var valElement = Instantiate(ValPrefab, ValRoot);
-            valElement.transform.GetComponentInChildren<NodeElement>().InitVal(valNodeSlotsNames[i], MyNode);
+            valElement.transform.GetComponentInChildren<NeuronPart>().InitVal(valNodeSlotsNames[i], MyNeuron);
         }
 
         //  ---------- Out ----------
         for (var i = 0; i < outNodeSlotsNames.Length; i++)
         {
             var outElement = Instantiate(OutPrefab, OutRoot);
-            outElement.transform.GetComponentInChildren<NodeElement>().InitOut(i, outNodeSlotsNames[i], MyNode);
+            outElement.transform.GetComponentInChildren<NeuronPart>().InitOut(i, outNodeSlotsNames[i], MyNeuron);
 
             // ---------- Envoy & Line ----------
             env[i] = Instantiate(Envoy, transform);
-            env[i].GetComponent<NodeEnvoy>().MyNodeElement = outElement.GetComponentInChildren<NodeElement>();
-            GetComponent<Node>().NodeEnvoys.Add(env[i].GetComponent<NodeEnvoy>());
+            env[i].GetComponent<Synapse>().MyNeuronPart = outElement.GetComponentInChildren<NeuronPart>();
+            GetComponent<Neuron>().Synapses.Add(env[i].GetComponent<Synapse>());
 
             var constraintSource = new ConstraintSource
             {

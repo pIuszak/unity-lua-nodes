@@ -4,7 +4,7 @@ using UnityEngine;
 public class NodeOrchestration : MonoBehaviour
 {
     public static NodeOrchestration Instance;
-    public List<NodeContainer> NodeContainers = new List<NodeContainer>();
+    public List<Brain> NodeContainers = new List<Brain>();
     public void Awake()
     {
         Instance = this;

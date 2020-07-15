@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class NodeEnvoy : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class Synapse : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-    public NodeElement MyNodeElement;
+    public NeuronPart MyNeuronPart;
     
-    public NodeElement GetData()
+    public NeuronPart GetData()
     {
-        return MyNodeElement;
+        return MyNeuronPart;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.GetComponent<NodeElement>()) return;
-        MyNodeElement.MyNode.ConnectToOtherOutputNodes(MyNodeElement.Index, other.GetComponent<NodeElement>().MyNode); 
-        other.GetComponent<NodeElement>().MyNode.ConnectToOtherInputNodes(MyNodeElement.MyNode);
+        if (!other.GetComponent<NeuronPart>()) return;
+        MyNeuronPart.MyNeuron.ConnectToOtherOutputNodes(MyNeuronPart.Index, other.GetComponent<NeuronPart>().MyNeuron); 
+        other.GetComponent<NeuronPart>().MyNeuron.ConnectToOtherInputNodes(MyNeuronPart.MyNeuron);
     }
     
     public new void OnBeginDrag(PointerEventData eventData) {

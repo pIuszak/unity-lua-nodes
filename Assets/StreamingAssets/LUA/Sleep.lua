@@ -17,7 +17,7 @@ function config()
     local inNode = { "Action", "Value" }
     local valueNode = {}
     local outNode = {"Action"}
-    NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
+    Brain.CreateNewNeuron(nodeName, inNode, valueNode, outNode)
 end
 local function isempty(s)
     return s == nil or s == ''

@@ -9,101 +9,98 @@ using UnityEngine.UI;
 [MoonSharpUserData]
 [ExecuteInEditMode]
 [Serializable]
-public class Node : DragDrop
+public class Neuron : DragDrop
 {
-    [SerializeField] public Brain Brain;
-    protected List<NodeElement>  OutNodeElement =  new List<NodeElement>();
-     protected List<NodeElement> ValuesNodes = new List<NodeElement>();
-     protected List<Node> OutputNodes = new List<Node>();
-     protected List<Node> InputNodes = new List<Node>();
-        
-    public bool isBlocked;
-
-    public NodeConfig NodeConfig;
+    public bool IsNeuronBlocked;
+    [SerializeField] public TestBrain TestBrain;
+    protected List<NeuronPart> NeuronPartsOut = new List<NeuronPart>();
+    protected List<NeuronPart> NeuronValues = new List<NeuronPart>();
+    protected List<Neuron> NeuronsOut = new List<Neuron>();
+    protected List<Neuron> NeuronsIn = new List<Neuron>();
+    public NeuronConfig NeuronConfig;
     public Image BgImage;
-    [SerializeField] public List<NodeEnvoy> NodeEnvoys = new List<NodeEnvoy>();
+    [SerializeField] public List<Synapse> Synapses = new List<Synapse>();
 
     [NaughtyAttributes.ResizableTextArea] [SerializeField]
     protected string LuaCode;
-
     public bool AlreadyExecuted;
     public bool AlreadyChecked;
-
-    public float NodeWaitTime = 1f;
-
+    public float WaitTime = 1f;
     public int LocalIndex;
+    
     public List<DynValue> CurrentArgs = new List<DynValue>();
 
     private void Awake()
     {
-        Brain = GetComponentInParent<Brain>();
+        TestBrain = GetComponentInParent<TestBrain>();
     }
 
     public void SaveValues()
     {
-        foreach (var valuesNode in ValuesNodes)
+        foreach (var valuesNode in NeuronValues)
         {
-            NodeConfig.Values.Add(valuesNode.Value);
+            NeuronConfig.Values.Add(valuesNode.Value);
         }
     }
-    public void AddValueNodeElement(NodeElement nodeElement)
+
+    public void AddNeuronValue(NeuronPart neuronPart)
     {
-        ValuesNodes.Add(nodeElement);
+        NeuronValues.Add(neuronPart);
     }
 
     // new 
-    public void AddOutNodeElement(NodeElement nodeElement)
+    public void AddNeuronPartOut(NeuronPart neuronPart)
     {
-        OutNodeElement.Add(nodeElement);
-        OutNodeElement = OutNodeElement.OrderBy(o => o.Index).ToList();
+        NeuronPartsOut.Add(neuronPart);
+        NeuronPartsOut = NeuronPartsOut.OrderBy(o => o.Index).ToList();
     }
-    
-    // Add and sort to match NodeElement 
-    public void ConnectToOtherOutputNodes(int index, Node node)
+
+    // Add and sort to match Synapse 
+    public void ConnectToOtherOutputNodes(int index, Neuron neuron)
     {
-        node.LocalIndex = index;
-        OutputNodes.Add(node);
-        OutputNodes = OutputNodes.OrderBy(o => o.LocalIndex).ToList();
+        neuron.LocalIndex = index;
+        NeuronsOut.Add(neuron);
+        NeuronsOut = NeuronsOut.OrderBy(o => o.LocalIndex).ToList();
     }
-    
-    
-    public void ConnectToOtherInputNodes(Node node)
+
+
+    public void ConnectToOtherInputNodes(Neuron neuron)
     {
-        InputNodes.Add(node);
+        NeuronsIn.Add(neuron);
     }
-    
+
     public void SetNewValues(string[] val)
     {
-        for (int i = 0; i < ValuesNodes.Count; i++)
+        for (int i = 0; i < NeuronValues.Count; i++)
         {
-            ValuesNodes[i].SetValue(val[i]);
+            NeuronValues[i].SetValue(val[i]);
         }
     }
 
     public void SetNewEnvoysPos(Vector3[] pos)
     {
-        for (int i = 0; i < NodeEnvoys.Count; i++)
+        for (int i = 0; i < Synapses.Count; i++)
         {
-            NodeEnvoys[i].transform.localPosition = pos[i];
+            Synapses[i].transform.localPosition = pos[i];
         }
     }
 
     public void SavePosition()
     {
-        NodeConfig.Position = transform.localPosition;
-        foreach (var envoy in NodeEnvoys)
+        NeuronConfig.Position = transform.localPosition;
+        foreach (var envoy in Synapses)
         {
-            NodeConfig.EnvoyPositions.Add(envoy.transform.localPosition);
+            NeuronConfig.EnvoyPositions.Add(envoy.transform.localPosition);
         }
     }
 
     public void Execute(Table args)
     {
-        if (AlreadyExecuted && InputNodes.Count != 1) return;
+        if (AlreadyExecuted && NeuronsIn.Count != 1) return;
         // check if every input node is fulfilled
-        if (!AlreadyChecked && InputNodes.Count != 1)
+        if (!AlreadyChecked && NeuronsIn.Count != 1)
         {
-            foreach (Node node in InputNodes)
+            foreach (Neuron node in NeuronsIn)
             {
                 AlreadyChecked = true;
                 if (node != this) node.Execute(args);
@@ -118,27 +115,28 @@ public class Node : DragDrop
 
     public IEnumerator ExecuteC(Table args)
     {
+        Debug.Log("ExecuteC" + NeuronConfig.LuaScript);
         yield return new WaitForSeconds(1f);
 
         // import lua script bra
         var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, NodeConfig.LuaScript);
+        filePath = System.IO.Path.Combine(filePath, NeuronConfig.LuaScript);
         LuaCode = System.IO.File.ReadAllText(filePath);
         var script = new Script();
         // Automatically register all MoonSharpUserData types
         UserData.RegisterAssembly();
-        
+
         // add lua scripts access to Voxelland API 
-        script.Globals["Brain"] = Brain;
-        script.Globals["Node"] = this;
+        script.Globals["Brain"] = TestBrain;
+        script.Globals["Neuron"] = this;
         script.DoString(LuaCode);
-        
+
         // add arguments from value nodes 
-        foreach (var nodeConfigValue in ValuesNodes)
+        foreach (var nodeConfigValue in NeuronValues)
         {
             CurrentArgs.Add(DynValue.NewString(nodeConfigValue.Value));
         }
-        
+
         // add arguments from previous nodes 
         if (args?.Values != null)
         {
@@ -148,45 +146,46 @@ public class Node : DragDrop
                 CurrentArgs.Add(newArg);
             }
         }
-        
+
         // call lua script
         var res = script.Call(script.Globals["main"], CurrentArgs);
-        
+
         // wait 
-        yield return new WaitForSeconds(NodeWaitTime);
+        yield return new WaitForSeconds(WaitTime);
         AlreadyExecuted = true;
 
-        if (OutputNodes.Count <= decimal.Zero)
+        if (NeuronsOut.Count <= decimal.Zero)
         {
-            Brain.Repeat();
+            TestBrain.Repeat();
         }
-        
+
         // move to next node/nodes
-        foreach (var outputNode in OutputNodes.Where(outputNode => !outputNode.isBlocked))
+        foreach (var outputNode in NeuronsOut.Where(outputNode => !outputNode.IsNeuronBlocked))
         {
             outputNode.Execute(res.Table);
         }
-        
+
         CurrentArgs.Clear();
     }
 
     public void BlockNode(int val)
     {
-        if (OutputNodes[val]) OutputNodes[val].isBlocked = true;
+        if (NeuronsOut[val]) NeuronsOut[val].IsNeuronBlocked = true;
     }
 
     public int NodeSetWaitTime(float val)
     {
-        NodeWaitTime = val;
+        WaitTime = val;
         return 0;
     }
-    
+
     public void ClearAction()
     {
-        foreach (var node in OutputNodes.Where(node => node))
+        foreach (var node in NeuronsOut.Where(node => node))
         {
-            node.isBlocked = false;
+            node.IsNeuronBlocked = false;
         }
+
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }
@@ -199,10 +198,11 @@ public class Node : DragDrop
     private IEnumerator ClearActionC()
     {
         yield return new WaitForSeconds(1f);
-        foreach (var node in OutputNodes)
+        foreach (var node in NeuronsOut)
         {
             node.ClearAction();
         }
+
         AlreadyExecuted = false;
         AlreadyChecked = false;
     }

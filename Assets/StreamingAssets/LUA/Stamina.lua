@@ -8,7 +8,7 @@ function config()
     local inNode = {}
     local valueNode = {}
     local outNode = { "Value"}
-    NodeManager.CreateNew(nodeName, inNode, valueNode, outNode)
+    Brain.CreateNewNeuron(nodeName, inNode, valueNode, outNode)
 end
 
 function main(args)

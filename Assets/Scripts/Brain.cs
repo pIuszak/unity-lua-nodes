@@ -1,135 +1,188 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using JetBrains.Annotations;
 using MoonSharp.Interpreter;
-using TMPro;
+using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 [MoonSharpUserData]
 public class Brain : MonoBehaviour
 {
-    [field: Range(0, 100)]
-    public float Health { get; protected set; } = 100;
+    public GameObject NodePrefab;
+    public Transform DragDropRoot;
+    public Transform DockRoot;
+    public GameObject DockButtonPrefab;
+    public List<Neuron> NodesMemory = new List<Neuron>();
+    private string currentScriptName;
+    private Vector3 currentScriptPosition;
+    public Neuron StartNeuron;
 
-    [field: Range(0, 100)]
-    public float Stamina { get; protected set; } = 90;
-
-    [field: Range(0, 100)]
-    public float Hunger { get; protected set; } = 80;
-
-    [SerializeField] private NavMeshAgent Agent;
-    [SerializeField] private TextMeshPro TextMesh;
-    [SerializeField] private Detector Sight;
-    [SerializeField] private Detector Melee;
-    public GameObject Target;
-    [SerializeField] private Animator Animator;
-    [SerializeField] private NodeContainer NodeContainer;
-    private void Debug(string var)
+    private void Start()
     {
-        UnityEngine.Debug.Log(var);
-        TextMesh.text = var;
+        InitializeDockButtons();
     }
 
-    public float[] Detect(string xd)
+    // this method invokes 
+    public void Play()
     {
-        return Sight.Detect(xd);
+        // run start 
+        foreach (var node in NodesMemory)
+        {
+            node.ClearAction();
+        }
+
+        StartNeuron.Execute(new Table(new Script()));
     }
     
     [UsedImplicitly]
-    public void Move(Vector3 destination)
+    public void RestartScene()
     {
-        Debug("Move " + destination);
-        Agent.SetDestination(destination);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    private void InitializeDockButtons()
+    {
+        var info = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "LUA"));
+        var fileInfo = info.GetFiles();
+        foreach (var file in fileInfo)
+        {
+            CreateDockButton(file.Name);
+        }
+    }
+    private void CreateDockButton(string luaScriptName)
+    {
+        if (luaScriptName.Contains(".meta")) return;
+
+        var cleanName = luaScriptName.Replace(".lua", "");
+        var go = Instantiate(DockButtonPrefab, DockRoot);
+        var dockButton = go.GetComponent<DockButton>();
+        dockButton.name = cleanName;
+        dockButton.MyName.text = cleanName;
+        dockButton.MyButton.onClick.AddListener(delegate { CreateNeuron(luaScriptName); });
+        var img = Resources.Load<Sprite>("Icons/" + cleanName);
+        var defImg = Resources.Load<Sprite>("Icons/Default");
+        dockButton.MyIcon.sprite = img != null ? img : defImg;
+        dockButton.MyIcon.SetNativeSize();
+    }
+    private void CreateNeuron(string fileName)
+    {
+        CreateNeuron(fileName, new List<string>());
     }
     
     [UsedImplicitly]
-    public void MoveTo(float x, float z)
+    public void CreateNeuron(string fileName, List<string> values)
     {
-        var target = new Vector3(x, 1.56f, z);
-        Debug("Move " + target);
-        Agent.SetDestination(target);
+        currentScriptName = fileName;
+        var filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = Path.Combine(filePath, fileName);
+        Debug.Log(filePath);
+        var luaCode = File.ReadAllText(filePath);
+        var script = new Script();
+
+        // Automatically register all MoonSharpUserData types
+        UserData.RegisterAssembly();
+        script.Globals["Brain"] = this;
+        script.DoString(luaCode);
+        script.Call(script.Globals["config"]);
     }
 
     [UsedImplicitly]
-    public float GetPositionOfAxis(int axis)
+    // invoked in config() in every lua script+
+    public void CreateNewNeuron(string nodeName, string[] inNodeSlotsNames, string[] valNodeSlotsNames,
+        string[] outNodeSlotsNames)
     {
-        switch (axis)
+        var node = Instantiate(NodePrefab, DragDropRoot);
+        node.transform.localPosition = currentScriptPosition;
+
+
+        // node.transform.localPosition.
+        var newName = currentScriptName.Replace(".lua", "_node");
+
+        node.name = newName;
+        node.GetComponent<Neuron>().NeuronConfig.LuaScript = currentScriptName;
+        
+        if (nodeName == "Start")
         {
-            case 0: return transform.position.x;
-            case 1: return transform.position.y;
-            case 2: return transform.position.z;
+            StartNeuron = node.GetComponent<Neuron>();
         }
 
-        UnityEngine.Debug.LogWarning("GetPositionOfAxis takes only arguments 0-2");
-        return -1;
+        NodesMemory.Add(node.GetComponent<Neuron>());
+        var bgName = currentScriptName.Replace(".lua", "");
+
+        var img = Resources.Load<Sprite>("Icons/" + bgName);
+        var defImg = Resources.Load<Sprite>("Icons/Default");
+        node.GetComponent<Neuron>().BgImage.sprite = img != null ? img : defImg;
+
+
+        node.GetComponent<NeuronConstructor>()
+            .CreateNode(nodeName, inNodeSlotsNames, valNodeSlotsNames, outNodeSlotsNames);
     }
+    
 
     [UsedImplicitly]
-    public float GetDistanceFromTarget()
+    public void SaveToJson()
     {
-        return Target == null ? -1 : Vector3.Distance(Target.gameObject.transform.position, transform.position);
-    }
-
-    [UsedImplicitly]
-    public void TryEat()
-    {
-        UnityEngine.Debug.Log("TryEat");
-        Target = Melee.DetectGameObject("Egg");
-        if (Target != null)
+        FileUtilities.ClearFile("save.txt");
+        foreach (var node in NodesMemory)
         {
-            Debug("Eat " + Target.name);
-            Melee.CurrentlyDetected.Remove(Target.gameObject);
-            Sight.CurrentlyDetected.Remove(Target.gameObject);
-            Destroy(Target.gameObject);
-            Target = null;
+            node.SavePosition();
+            node.SaveValues();
+            var json = JsonUtility.ToJson(node.NeuronConfig);
+
+            FileUtilities.WriteString(json, "save.txt");
         }
     }
 
     [UsedImplicitly]
-    public void Attack()
+    public void LoadFromJson()
     {
-        Debug("Attack " + Target.name);
-        Target.gameObject.SetActive(false);
-        Target = null;
-        //Debug.Log("Attack");
-    }
+        var lines = FileUtilities.ReadString().ReadToEnd()
+            .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-    [UsedImplicitly]
-    public void Die()
-    {
-        //  DebugLog(this.gameObject.name + " Died");
-        gameObject.SetActive(false);
-    }
-
-    [UsedImplicitly]
-    public void Sleep(string seconds)
-    {
-        StartCoroutine(SleepC(seconds));
-    }
-
-    [UsedImplicitly]
-    public void Wait(float time)
-    {
-    }
-
-    private IEnumerator SleepC(string val)
-    {
-        var seconds = float.Parse(val);
-        //   UnityEngine.Debug.Log("Sleep C" + seconds);
-        Animator.CrossFade("Sleep", 0.3f);
-        while (seconds > 0)
+        // create nodes 
+        foreach (var s in lines)
         {
-            Debug("zzzZZZzzz " + --seconds);
-            yield return new WaitForSeconds(1);
+            var newNode = JsonUtility.FromJson<NeuronConfig>(s);
+            currentScriptPosition = newNode.Position;
+            CreateNeuron(newNode.LuaScript, newNode.Values);
         }
+        
+        // delayed apply envoys and values  
+        StartCoroutine(ApplyNodeElements(lines));
 
-        // UnityEngine.Debug.Log("Sleep C END" + seconds);
-        Animator.CrossFade("Idle", 0.3f);
-        Debug(" ");
     }
 
-    public void Repeat()
+    [Button]
+    [UsedImplicitly]
+    // snap all nodes to grid
+    public void SmartSort()
     {
-        NodeContainer.Play();
+        const float startY = 284.0462f;
+        var memX = -610.7512f;
+        var memY = 284.0462f;
+        const float mem = 240f;
+        
+        for (var i = 0; i < NodesMemory.Count; i++)
+        {
+            NodesMemory[i].transform.localPosition =
+                new Vector3(memX, memY, 0);
+            memY -= mem;
+            if ((i % 3) != 2) continue;
+            memX += mem;
+            memY = startY;
+        }
+    }
+
+    private IEnumerator ApplyNodeElements(IReadOnlyList<string> lines)
+    {
+        yield return new WaitForSeconds(1f);
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var newNode = JsonUtility.FromJson<NeuronConfig>(lines[i]);
+            NodesMemory[i].SetNewEnvoysPos(newNode.EnvoyPositions.ToArray());
+            NodesMemory[i].SetNewValues(newNode.Values.ToArray());
+        }
     }
 }
