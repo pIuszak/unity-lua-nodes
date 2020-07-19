@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 521064279}
-  - component: {fileID: 521064280}
   - component: {fileID: 656903600688132510}
   - component: {fileID: 691892366}
   m_Layer: 0
@@ -33,19 +32,6 @@ Transform:
   m_Father: {fileID: 5553372411851074381}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &521064280
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 521064278}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 5
-  m_Center: {x: 0, y: 0, z: 4}
 --- !u!114 &656903600688132510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +53,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521064278}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 9.23, y: 0.5, z: 10}
@@ -480,7 +466,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2958583071819577942}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 2}
@@ -1321,6 +1307,7 @@ MonoBehaviour:
   Sight: {fileID: 656903600688132510}
   Melee: {fileID: 7770282315345306291}
   Animator: {fileID: 1403226973}
+  Select: {fileID: 713551294}
 --- !u!114 &713551294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1334,6 +1321,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outline: {fileID: 1312354271}
+  canvases: []
+  IsEnabled: 0
 --- !u!1 &9211326794952107772
 GameObject:
   m_ObjectHideFlags: 0

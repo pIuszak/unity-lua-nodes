@@ -11,15 +11,9 @@ public class NeuronPart : MonoBehaviour, IDropHandler
     public int Index;
     [SerializeField] private Text DisplayText;
     [SerializeField] private InputField Input;
-
-    private Neuron myNeuron;
-
-    public Neuron MyNeuron
-    {
-        get => myNeuron;
-        set => myNeuron = value;
-    }
     
+    public Neuron MyNeuron;
+
     public NeuronPart(int index, string name, string value)
     {
         Index = index;
@@ -42,7 +36,7 @@ public class NeuronPart : MonoBehaviour, IDropHandler
     public void InitVal(string n, Neuron neuron)
     {
         DisplayText.text = Name = n;
-        myNeuron = neuron;
+        MyNeuron = neuron;
         neuron.AddNeuronValue(this);
     }
 
@@ -50,14 +44,14 @@ public class NeuronPart : MonoBehaviour, IDropHandler
     {
         DisplayText.text = Name = n;
         Index = index;
-        myNeuron = neuron;
+        MyNeuron = neuron;
         neuron.AddNeuronPartOut(this);
     }
 
     public void InitIn(string n, Neuron neuron)
     {
         DisplayText.text = Name = n;
-        myNeuron = neuron;
+        MyNeuron = neuron;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -26,6 +26,7 @@ public class Brain : MonoBehaviour
         InitializeDockButtons();
     }
 
+    private bool isFirst;
     // this method invokes 
     public void Play()
     {
@@ -33,8 +34,10 @@ public class Brain : MonoBehaviour
         foreach (var node in Neurons)
         {
             node.ClearAction();
+            if (!isFirst) node.InitScript();
         }
 
+        isFirst = true;
         startNeuron.Execute(new Table(new Script()));
     }
     
@@ -78,7 +81,6 @@ public class Brain : MonoBehaviour
         currentScriptName = fileName;
         var filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = Path.Combine(filePath, fileName);
-        Debug.Log(filePath);
         var luaCode = File.ReadAllText(filePath);
         var script = new Script();
 

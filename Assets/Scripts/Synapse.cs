@@ -12,7 +12,8 @@ public class Synapse : DragDrop, IPointerDownHandler, IBeginDragHandler, IEndDra
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.GetComponent<NeuronPart>()) return;
+
+      if (!other.GetComponent<NeuronPart>()) return;
         MyNeuronPart.MyNeuron.ConnectToOtherOutputNodes(MyNeuronPart.Index, other.GetComponent<NeuronPart>().MyNeuron); 
         other.GetComponent<NeuronPart>().MyNeuron.ConnectToOtherInputNodes(MyNeuronPart.MyNeuron);
     }

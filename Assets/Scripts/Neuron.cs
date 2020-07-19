@@ -94,7 +94,7 @@ public class Neuron : DragDrop
             NeuronConfig.SynapsesPositions.Add(envoy.transform.localPosition);
         }
     }
-
+    
     public void Execute(Table args)
     {
         if (AlreadyExecuted && NeuronsIn.Count != 1) return;
@@ -117,20 +117,7 @@ public class Neuron : DragDrop
     public IEnumerator ExecuteC(Table args)
     {
         yield return new WaitForSeconds(1f);
-
-        // import lua script bra
-        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, NeuronConfig.Behaviour);
-        LuaCode = System.IO.File.ReadAllText(filePath);
-        var script = new Script();
-        // Automatically register all MoonSharpUserData types
-        // UserData.RegisterAssembly();
-
-        // add lua scripts access to Voxelland API 
-        script.Globals["Brain"] = Creature;
-        script.Globals["Neuron"] = this;
-        script.DoString(LuaCode);
-
+        
         // add arguments from value nodes 
         foreach (var nodeConfigValue in NeuronValues)
         {
@@ -166,6 +153,23 @@ public class Neuron : DragDrop
         }
 
         CurrentArgs.Clear();
+    }
+
+    public Script script;
+    public void InitScript()
+    {
+        // import lua script bra
+        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = System.IO.Path.Combine(filePath, NeuronConfig.Behaviour);
+        LuaCode = System.IO.File.ReadAllText(filePath); 
+        script = new Script();
+        // Automatically register all MoonSharpUserData types
+        // UserData.RegisterAssembly();
+
+        // add lua scripts access to Voxelland API 
+        script.Globals["Brain"] = Creature;
+        script.Globals["Neuron"] = this;
+        script.DoString(LuaCode);
     }
 
     public void BlockNode(int val)

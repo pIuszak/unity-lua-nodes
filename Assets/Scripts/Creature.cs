@@ -30,7 +30,8 @@ public class Creature : Brain
     
     private GameObject target;
     [SerializeField] private Animator Animator;
-    
+
+    public Select Select;
     private void Debug(string var)
     {
        // UnityEngine.Debug.Log(var);

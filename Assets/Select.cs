@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Select : MonoBehaviour
+public  class Select : MonoBehaviour
 {
     public Outline outline;
     [SerializeField] private List<Canvas> canvases;
+    public bool IsEnabled;
     public void Start()
     {
         SelectManager.Instance.Selects.Add(this);
@@ -27,7 +28,11 @@ public class Select : MonoBehaviour
     {
         foreach (var canvas in GetComponentsInChildren<Canvas>())
         {
-            canvas.enabled = val;
+            IsEnabled = canvas.enabled = val;
+        }
+        foreach (var synapse in GetComponentsInChildren<BoxCollider2D>())
+        {
+            synapse.enabled = val;
         }
     }
 
