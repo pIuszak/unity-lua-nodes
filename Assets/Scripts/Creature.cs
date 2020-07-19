@@ -81,8 +81,7 @@ public class Creature : Brain
     [UsedImplicitly]
     public void TryEat()
     {
-        UnityEngine.Debug.Log("TryEat");
-        target = Melee.DetectGameObject("Egg");
+        target = Melee.DetectGameObject("Food");
         if (target != null)
         {
             Debug("Eat " + target.name);

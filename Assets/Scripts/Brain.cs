@@ -38,7 +38,11 @@ public class Brain : MonoBehaviour
         }
 
         isFirst = true;
-        startNeuron.Execute(new Table(new Script()));
+        if (startNeuron != null)
+        {
+            startNeuron.Execute(new Table(new Script()));
+        }
+
     }
     
     [UsedImplicitly]
